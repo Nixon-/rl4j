@@ -30,7 +30,7 @@ public interface IHistoryProcessor {
 
     @AllArgsConstructor
     @Value
-    public static class Configuration {
+    class Configuration {
         int historyLength;
         int rescaledWidth;
         int rescaledHeight;
@@ -40,6 +40,9 @@ public interface IHistoryProcessor {
         int offsetY;
         int skipFrame;
 
+        /**
+         * Default constructor.
+         */
         public Configuration() {
             historyLength = 4;
             rescaledWidth = 84;
@@ -51,8 +54,60 @@ public interface IHistoryProcessor {
             skipFrame = 4;
         }
 
+        /**
+         * @return Shape of image, where 0=history length, 1=cropping width, 2=cropping height.
+         */
         public int[] getShape() {
-            return new int[]{getHistoryLength(), getCroppingWidth(), getCroppingHeight()};
+            return new int[]{
+                    getHistoryLength(),
+                    getCroppingWidth(),
+                    getCroppingHeight()};
+        }
+
+        /**
+         * @return  Length of History.
+         */
+        public int getHistoryLength() {
+            return this.historyLength;
+        }
+
+        /**
+         * @return  Rescaled Width.
+         */
+        public int getRescaledWidth() {
+            return this.rescaledWidth;
+        }
+
+        public int getRescaledHeight() {
+            return this.rescaledHeight;
+        }
+
+        /**
+         * @return  Cropping width.
+         */
+        public int getCroppingWidth() {
+            return this.croppingWidth;
+        }
+
+        /**
+         * @return  Cropping Height.
+         */
+        public int getCroppingHeight() {
+            return this.croppingHeight;
+        }
+
+        /**
+         * @return  X axis offset.
+         */
+        public int getOffsetX() {
+            return this.offsetX;
+        }
+
+        /**
+         * @return  Y axis offset.
+         */
+        public int getOffsetY() {
+            return this.offsetY;
         }
     }
 }

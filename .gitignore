@@ -2,4 +2,5 @@
 *.log
 /target/
 target/
-.iml
+*.iml
+**/.iml

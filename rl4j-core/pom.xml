@@ -7,7 +7,7 @@
     <parent>
         <artifactId>rl4j</artifactId>
         <groupId>org.deeplearning4j.rl4j</groupId>
-        <version>0.5.0-SNAPSHOT</version>
+        <version>0.5.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>rl4j-core</artifactId>
@@ -15,8 +15,6 @@
 
     <name>rl4j-core</name>
     <url>http://maven.apache.org</url>
-
-
 
     <dependencies>
         <dependency>
@@ -27,7 +25,7 @@
         <dependency>
             <groupId>org.deeplearning4j.rl4j</groupId>
             <artifactId>rl4j-api</artifactId>
-            <version>0.5.0-SNAPSHOT</version>
+            <version>0.5.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.deeplearning4j</groupId>

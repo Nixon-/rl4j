@@ -15,7 +15,7 @@ public class DeadlyCorridor extends VizDoom {
     }
 
     public Configuration getConfiguration() {
-        setScaleFactor(1.0);
+        this.setScaleFactor(1.0);
         List<Button> buttons = Arrays.asList(
                 Button.ATTACK,
                 Button.MOVE_LEFT,

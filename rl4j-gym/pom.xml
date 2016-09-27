@@ -3,7 +3,7 @@
     <parent>
         <artifactId>rl4j</artifactId>
         <groupId>org.deeplearning4j.rl4j</groupId>
-        <version>0.5.0-SNAPSHOT</version>
+        <version>0.5.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -19,9 +19,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.deeplearning4j.rl4j</groupId>
+            <groupId>org.deeplearning4j</groupId>
             <artifactId>gym-java-client</artifactId>
-            <version>0.5.0-SNAPSHOT</version>
+            <version>0.6.0</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -33,6 +33,11 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
             <version>1.1.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.deeplearning4j.rl4j</groupId>
+            <artifactId>rl4j-api</artifactId>
+            <version>0.5.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

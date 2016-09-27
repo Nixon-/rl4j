@@ -88,6 +88,11 @@ public class HistoryProcessor implements IHistoryProcessor {
         }
     }
 
+    @Override
+    public Configuration getConf() {
+        return this.conf;
+    }
+
     public INDArray[] getHistory() {
         INDArray[] array = new INDArray[getConf().getHistoryLength()];
         for (int i = 0; i < conf.getHistoryLength(); i++) {

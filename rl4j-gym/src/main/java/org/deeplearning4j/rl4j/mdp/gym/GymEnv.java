@@ -1,12 +1,13 @@
 package org.deeplearning4j.rl4j.mdp.gym;
 
 
-import org.deeplearning4j.rl4j.Client;
-import org.deeplearning4j.rl4j.ClientFactory;
-import org.deeplearning4j.rl4j.StepReply;
-import org.deeplearning4j.rl4j.gym.space.HighLowDiscrete;
+import org.deeplearning4j.gym.Client;
+import org.deeplearning4j.gym.ClientFactory;
+import org.deeplearning4j.gym.StepReply;
+
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.space.ActionSpace;
+import org.deeplearning4j.rl4j.space.HighLowDiscrete;
 import org.deeplearning4j.rl4j.space.ObservationSpace;
 
 
@@ -14,7 +15,6 @@ import org.deeplearning4j.rl4j.space.ObservationSpace;
  * @author rubenfiszel (ruben.fiszel@epfl.ch) 7/12/16.
  *
  * Wrapper over the client of gym-java-client
- *
  */
 public class GymEnv<O, A, AS extends ActionSpace<A>> implements MDP<O, A, AS> {
 

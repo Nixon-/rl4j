@@ -4,7 +4,7 @@ package org.deeplearning4j.rl4j.mdp.vizdoom;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Value;
-import org.deeplearning4j.rl4j.StepReply;
+import org.deeplearning4j.gym.StepReply;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.space.ArrayObservationSpace;
 import org.deeplearning4j.rl4j.space.DiscreteSpace;
@@ -28,54 +28,54 @@ import java.util.List;
  *
  * is mostly configured by
  *
- *    String scenario;       name of the scenario
+ *    String scenarioName;       name of the scenarioName
  *    double livingReward;   additional reward at each step for living
  *    double deathPenalty;   negative reward when ded
  *    int doomSkill;         skill of the ennemy
  *    int timeout;           number of step after which simulation time out
  *    int startTime;         number of internal tics before the simulation starts (useful to draw weapon by example)
- *    List<Button> buttons;  the list of inputs one can press for a given scenario (noop is automatically added)
+ *    List<Button> buttons;  the list of inputs one can press for a given scenarioName (noop is automatically added)
  *
  *
  *
  */
-abstract public class VizDoom implements MDP<VizDoom.GameScreen, Integer, DiscreteSpace> {
+abstract class VizDoom implements MDP<VizDoom.GameScreen, Integer, DiscreteSpace> {
 
+    final private static String DOOM_ROOT = "vizdoom";
 
-    final public static String DOOM_ROOT = "vizdoom";
-    
-    protected DoomGame game;
-    final protected Logger log = LoggerFactory.getLogger("Vizdoom");
-    final protected GlobalMemory memory = new SystemInfo().getHardware().getMemory();
-    final protected List<int[]> actions;
-    final protected DiscreteSpace discreteSpace;
-    final protected ObservationSpace<GameScreen> observationSpace;
+    private DoomGame game;
+    final private Logger log = LoggerFactory.getLogger("Vizdoom");
+    final private GlobalMemory memory = new SystemInfo().getHardware().getMemory();
+    final private List<int[]> actions;
+    final private DiscreteSpace discreteSpace;
+    final private ObservationSpace<GameScreen> observationSpace;
     @Getter
-    final protected boolean render;
+    final private boolean render;
     @Setter
-    protected double scaleFactor = 1;
+    private double scaleFactor = 1;
 
     public VizDoom() {
         this(false);
     }
 
-    public VizDoom(boolean render) {
+    VizDoom(boolean render) {
         this.render = render;
-        actions = new ArrayList<int[]>();
+        actions = new ArrayList<>();
         game = new DoomGame();
         setupGame();
         discreteSpace = new DiscreteSpace(getConfiguration().getButtons().size() + 1);
-        observationSpace = new ArrayObservationSpace<GameScreen>(new int[]{game.getScreenHeight(), game.getScreenWidth(), 3});
+        observationSpace = new ArrayObservationSpace<>(
+                new int[]{game.getScreenHeight(), game.getScreenWidth(), 3});
     }
 
 
-    public void setupGame() {
+    private void setupGame() {
 
         Configuration conf = getConfiguration();
 
         game.setViZDoomPath(DOOM_ROOT + "/vizdoom");
         game.setDoomGamePath(DOOM_ROOT + "/scenarios/freedoom2.wad");
-        game.setDoomScenarioPath(DOOM_ROOT + "/scenarios/" + conf.getScenario() + ".wad");
+        game.setDoomScenarioPath(DOOM_ROOT + "/scenarios/" + conf.getScenarioName() + ".wad");
 
         game.setDoomMap("map01");
 
@@ -115,10 +115,9 @@ abstract public class VizDoom implements MDP<VizDoom.GameScreen, Integer, Discre
         };
         // Adds game variables that will be included in state.
 
-        for (int i = 0; i < gameVar.length; i++) {
-            game.addAvailableGameVariable(gameVar[i]);
+        for (GameVariable aGameVar : gameVar) {
+            game.addAvailableGameVariable(aGameVar);
         }
-
 
         // Causes episodes to finish after timeout tics
         game.setEpisodeTimeout(conf.getTimeout());
@@ -150,10 +149,18 @@ abstract public class VizDoom implements MDP<VizDoom.GameScreen, Integer, Discre
         game.init();
     }
 
+    VizDoom setScaleFactor(final double scaleFactor) {
+        this.scaleFactor = scaleFactor;
+        return this;
+    }
+
+    boolean isRender() {
+        return this.render;
+    }
+
     public boolean isDone() {
         return game.isEpisodeFinished();
     }
-
 
     public GameScreen reset() {
         log.info("free Memory: " + FormatUtil.formatBytes(memory.getAvailable()) + "/"
@@ -171,13 +178,10 @@ abstract public class VizDoom implements MDP<VizDoom.GameScreen, Integer, Discre
 
 
     public StepReply<GameScreen> step(Integer action) {
-
         double r = game.makeAction(actions.get(action)) * scaleFactor;
         log.info(game.getEpisodeTime() + " " + r + " " + action + " ");
-        return new StepReply(new GameScreen(game.getGameScreen()), r, game.isEpisodeFinished(), null);
-
+        return new StepReply<>(new GameScreen(game.getGameScreen()), r, game.isEpisodeFinished(), null);
     }
-
 
     public ObservationSpace<GameScreen> getObservationSpace() {
         return observationSpace;
@@ -194,21 +198,94 @@ abstract public class VizDoom implements MDP<VizDoom.GameScreen, Integer, Discre
 
     @Value
     public static class Configuration {
-        String scenario;
-        double livingReward;
-        double deathPenalty;
-        int doomSkill;
-        int timeout;
-        int startTime;
+        private String scenarioName;
+        private double livingReward;
+        private double deathPenalty;
+        private int doomSkill;
+        private int timeout;
+        private int startTime;
         List<Button> buttons;
+
+        Configuration(final String scenarioName, final double livingReward,
+                             final double deathPenalty, final int doomSkill, final int timeout,
+                             final int startTime, final List<Button>buttons) {
+            this.setScenarioName(scenarioName)
+                    .setLivingReward(livingReward)
+                    .setDeathPenalty(deathPenalty)
+                    .setDoomSkill(doomSkill)
+                    .setTimeout(timeout)
+                    .setStartTime(startTime)
+                    .setButtons(buttons);
+        }
+
+        String getScenarioName() {
+            return scenarioName;
+        }
+
+        Configuration setScenarioName(String scenarioName) {
+            this.scenarioName = scenarioName;
+            return this;
+        }
+
+        double getLivingReward() {
+            return livingReward;
+        }
+
+        Configuration setLivingReward(double livingReward) {
+            this.livingReward = livingReward;
+            return this;
+        }
+
+        double getDeathPenalty() {
+            return deathPenalty;
+        }
+
+        Configuration setDeathPenalty(double deathPenalty) {
+            this.deathPenalty = deathPenalty;
+            return this;
+        }
+
+        int getDoomSkill() {
+            return doomSkill;
+        }
+
+        Configuration setDoomSkill(int doomSkill) {
+            this.doomSkill = doomSkill;
+            return this;
+        }
+
+        int getTimeout() {
+            return timeout;
+        }
+
+        Configuration setTimeout(int timeout) {
+            this.timeout = timeout;
+            return this;
+        }
+
+        int getStartTime() {
+            return startTime;
+        }
+
+        Configuration setStartTime(int startTime) {
+            this.startTime = startTime;
+            return this;
+        }
+
+        List<Button> getButtons() {
+            return buttons;
+        }
+
+        Configuration setButtons(List<Button> buttons) {
+            this.buttons = buttons;
+            return this;
+        }
     }
 
-    public static class GameScreen implements Encodable {
+    static class GameScreen implements Encodable {
+        final private double[] array;
 
-
-        double[] array;
-
-        public GameScreen(int[] screen) {
+        GameScreen(int[] screen) {
             array = new double[screen.length];
             for (int i = 0; i < screen.length; i++) {
                 array[i] = screen[i];
