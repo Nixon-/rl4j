@@ -10,7 +10,6 @@ import org.deeplearning4j.rl4j.space.ActionSpace;
 import org.deeplearning4j.rl4j.space.HighLowDiscrete;
 import org.deeplearning4j.rl4j.space.ObservationSpace;
 
-
 /**
  * @author rubenfiszel (ruben.fiszel@epfl.ch) 7/12/16.
  *
@@ -41,7 +40,6 @@ public class GymEnv<O, A, AS extends ActionSpace<A>> implements MDP<O, A, AS> {
         actionTransformer = new ActionTransformer((HighLowDiscrete) getActionSpace(), actions);
     }
 
-
     public ObservationSpace<O> getObservationSpace() {
         return client.getObservationSpace();
     }
@@ -68,7 +66,7 @@ public class GymEnv<O, A, AS extends ActionSpace<A>> implements MDP<O, A, AS> {
         done = false;
         return client.reset();
     }
-    
+
     public void upload(String apiKey) {
         client.upload(GYM_MONITOR_DIR, apiKey);
     }
