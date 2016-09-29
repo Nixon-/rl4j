@@ -27,10 +27,5 @@
             <artifactId>gym-java-client</artifactId>
             <version>${gym.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.deeplearning4j.rl4j</groupId>
-            <artifactId>rl4j-api</artifactId>
-            <version>0.6.1-SNAPSHOT</version>
-        </dependency>
     </dependencies>
 </project>
