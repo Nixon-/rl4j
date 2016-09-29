@@ -24,7 +24,8 @@ public class AsyncNStepQLearningDiscreteDense<O extends Encodable> extends Async
     }
 
     public AsyncNStepQLearningDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp,
-                                            DQNFactoryStdDense.Configuration netConf, AsyncNStepQLConfiguration conf,
+                                            DQNFactoryStdDense.Configuration netConf,
+                                            AsyncNStepQLConfiguration conf,
                                             DataManager dataManager) {
         this(mdp, new DQNFactoryStdDense(netConf), conf, dataManager);
     }

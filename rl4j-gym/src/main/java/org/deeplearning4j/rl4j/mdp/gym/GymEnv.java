@@ -16,9 +16,9 @@ import org.deeplearning4j.rl4j.space.ObservationSpace;
  *
  * Wrapper over the client of gym-java-client
  */
-class GymEnv<O, A, AS extends ActionSpace<A>> implements MDP<O, A, AS> {
+public class GymEnv<O, A, AS extends ActionSpace<A>> implements MDP<O, A, AS> {
 
-    final public static String GYM_MONITOR_DIR = "/tmp/gym-dqn";
+    private final static String GYM_MONITOR_DIR = "/tmp/gym-dqn";
 
     final private Client<O, A, AS> client;
     final private String envId;
@@ -68,8 +68,7 @@ class GymEnv<O, A, AS extends ActionSpace<A>> implements MDP<O, A, AS> {
         done = false;
         return client.reset();
     }
-
-
+    
     public void upload(String apiKey) {
         client.upload(GYM_MONITOR_DIR, apiKey);
     }
@@ -80,6 +79,6 @@ class GymEnv<O, A, AS extends ActionSpace<A>> implements MDP<O, A, AS> {
     }
 
     public GymEnv<O, A, AS> newInstance() {
-        return new GymEnv<O, A, AS>(envId, render, monitor);
+        return new GymEnv<>(envId, render, monitor);
     }
 }

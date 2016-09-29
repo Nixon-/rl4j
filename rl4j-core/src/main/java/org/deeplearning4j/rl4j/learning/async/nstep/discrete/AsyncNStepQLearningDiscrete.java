@@ -15,7 +15,7 @@ import org.deeplearning4j.rl4j.util.DataManager;
 /**
  * @author rubenfiszel (ruben.fiszel@epfl.ch) on 8/5/16.
  */
-abstract class AsyncNStepQLearningDiscrete<O extends Encodable>
+public abstract class AsyncNStepQLearningDiscrete<O extends Encodable>
         extends AsyncLearning<O, Integer, DiscreteSpace, IDQN> {
 
     final private AsyncNStepQLConfiguration configuration;
@@ -64,7 +64,7 @@ abstract class AsyncNStepQLearningDiscrete<O extends Encodable>
         return asyncGlobal;
     }
 
-    static class AsyncNStepQLConfiguration implements AsyncConfiguration {
+    public static class AsyncNStepQLConfiguration implements AsyncConfiguration {
         private final int seed;
         private final int maxEpochStep;
         private final int maxStep;

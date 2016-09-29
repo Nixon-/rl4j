@@ -201,7 +201,7 @@ public abstract class QLearning<O extends Encodable, A, AS extends ActionSpace<A
 
     }
 
-    protected class QLConfiguration implements LConfiguration {
+    public static class QLConfiguration implements LConfiguration {
         private int seed;
         private int maxEpochStep;
         private int maxStep;

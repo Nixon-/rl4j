@@ -35,7 +35,7 @@ import java.util.List;
  *
  *
  */
-abstract class VizDoom implements MDP<VizDoom.GameScreen, Integer, DiscreteSpace> {
+public abstract class VizDoom implements MDP<VizDoom.GameScreen, Integer, DiscreteSpace> {
 
     final private static String DOOM_ROOT = "vizdoom";
 
@@ -275,7 +275,7 @@ abstract class VizDoom implements MDP<VizDoom.GameScreen, Integer, DiscreteSpace
         }
     }
 
-    static class GameScreen implements Encodable {
+    public static class GameScreen implements Encodable {
         final private double[] array;
 
         GameScreen(int[] screen) {

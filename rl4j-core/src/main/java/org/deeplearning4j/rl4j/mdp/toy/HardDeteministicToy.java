@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  * A toy MDP where the agent should find the maximum to get the reward.
  * Useful to debug as it's very fast to run
  */
-class HardDeteministicToy implements MDP<HardToyState, Integer, DiscreteSpace> {
+public class HardDeteministicToy implements MDP<HardToyState, Integer, DiscreteSpace> {
 
     final private static int MAX_STEP = 20;
     final private static int SEED = 1234;

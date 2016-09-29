@@ -8,7 +8,6 @@
     <modules>
         <module>rl4j-api</module>
         <module>rl4j-core</module>
-        <module>rl4j-gym</module>
         <module>rl4j-doom</module>
     </modules>
     <packaging>pom</packaging>
@@ -40,14 +39,4 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
-
-    <dependencies>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.16.10</version>
-            <scope>provided</scope>
-        </dependency>
-
-    </dependencies>
 </project>

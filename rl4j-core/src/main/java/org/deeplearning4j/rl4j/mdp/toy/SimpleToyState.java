@@ -5,7 +5,7 @@ import org.deeplearning4j.rl4j.space.Encodable;
 /**
  * @author rubenfiszel (ruben.fiszel@epfl.ch) 7/18/16.
  */
-class SimpleToyState implements Encodable {
+public class SimpleToyState implements Encodable {
 
     // Todo: Figure out what i is.
     private int i;

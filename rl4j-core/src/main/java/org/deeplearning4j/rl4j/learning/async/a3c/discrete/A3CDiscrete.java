@@ -74,7 +74,7 @@ public abstract class A3CDiscrete<O extends Encodable> extends AsyncLearning<O, 
         return iActorCritic;
     }
 
-    static class A3CConfiguration implements AsyncConfiguration {
+    public static class A3CConfiguration implements AsyncConfiguration {
 
         private final int seed;
         private final int maxEpochStep;

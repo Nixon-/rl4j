@@ -49,6 +49,18 @@ public interface IHistoryProcessor {
             skipFrame = 4;
         }
 
+        public Configuration(int historyLength, int rescaledWidth, int rescaledHeight, int croppingWidth,
+                             int croppingHeight, int offsetX, int offsetY, int skipFrame) {
+            this.historyLength = historyLength;
+            this.rescaledWidth = rescaledWidth;
+            this.rescaledHeight = rescaledHeight;
+            this.croppingWidth = croppingWidth;
+            this.croppingHeight = croppingHeight;
+            this.offsetX = offsetX;
+            this.offsetY = offsetY;
+            this.skipFrame = skipFrame;
+        }
+
         /**
          * @return Shape of image, where 0=history length, 1=cropping width, 2=cropping height.
          */
