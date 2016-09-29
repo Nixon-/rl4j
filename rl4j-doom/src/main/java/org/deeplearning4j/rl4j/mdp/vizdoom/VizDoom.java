@@ -1,9 +1,5 @@
 package org.deeplearning4j.rl4j.mdp.vizdoom;
 
-
-import lombok.Getter;
-import lombok.Setter;
-import lombok.Value;
 import org.deeplearning4j.gym.StepReply;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.space.ArrayObservationSpace;
@@ -49,9 +45,7 @@ abstract class VizDoom implements MDP<VizDoom.GameScreen, Integer, DiscreteSpace
     final private List<int[]> actions;
     final private DiscreteSpace discreteSpace;
     final private ObservationSpace<GameScreen> observationSpace;
-    @Getter
     final private boolean render;
-    @Setter
     private double scaleFactor = 1;
 
     public VizDoom() {
@@ -196,8 +190,7 @@ abstract class VizDoom implements MDP<VizDoom.GameScreen, Integer, DiscreteSpace
 
     public abstract VizDoom newInstance();
 
-    @Value
-    public static class Configuration {
+    public class Configuration {
         private String scenarioName;
         private double livingReward;
         private double deathPenalty;
@@ -222,7 +215,7 @@ abstract class VizDoom implements MDP<VizDoom.GameScreen, Integer, DiscreteSpace
             return scenarioName;
         }
 
-        Configuration setScenarioName(String scenarioName) {
+        Configuration setScenarioName(final String scenarioName) {
             this.scenarioName = scenarioName;
             return this;
         }
@@ -231,7 +224,7 @@ abstract class VizDoom implements MDP<VizDoom.GameScreen, Integer, DiscreteSpace
             return livingReward;
         }
 
-        Configuration setLivingReward(double livingReward) {
+        Configuration setLivingReward(final double livingReward) {
             this.livingReward = livingReward;
             return this;
         }
@@ -240,7 +233,7 @@ abstract class VizDoom implements MDP<VizDoom.GameScreen, Integer, DiscreteSpace
             return deathPenalty;
         }
 
-        Configuration setDeathPenalty(double deathPenalty) {
+        Configuration setDeathPenalty(final double deathPenalty) {
             this.deathPenalty = deathPenalty;
             return this;
         }
@@ -249,7 +242,7 @@ abstract class VizDoom implements MDP<VizDoom.GameScreen, Integer, DiscreteSpace
             return doomSkill;
         }
 
-        Configuration setDoomSkill(int doomSkill) {
+        Configuration setDoomSkill(final int doomSkill) {
             this.doomSkill = doomSkill;
             return this;
         }

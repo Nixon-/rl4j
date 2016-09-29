@@ -1,7 +1,7 @@
 package org.deeplearning4j.rl4j.learning.async;
 
+import org.deeplearning4j.gym.StepReply;
 import org.deeplearning4j.nn.gradient.Gradient;
-import org.deeplearning4j.rl4j.StepReply;
 import org.deeplearning4j.rl4j.learning.Learning;
 import org.deeplearning4j.rl4j.learning.sync.Transition;
 import org.deeplearning4j.rl4j.network.NeuralNet;
@@ -19,7 +19,8 @@ import java.util.Stack;
  * Async Learning specialized for the Discrete Domain
  *
  */
-public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends NeuralNet> extends AsyncThread<O, Integer, DiscreteSpace, NN> {
+public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends NeuralNet>
+        extends AsyncThread<O, Integer, DiscreteSpace, NN> {
 
     public AsyncThreadDiscrete(AsyncGlobal<NN> asyncGlobal, int threadNumber){
         super(asyncGlobal, threadNumber);
@@ -89,14 +90,16 @@ public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends Neural
                     input = input.reshape(Learning.makeShape(1, input.shape()));
 
                 INDArray[] output = current.outputAll(input);
-                rewards.add(new MiniTrans(Transition.concat(history), action, output, accuReward));
+                rewards.add(new MiniTrans<>(Transition.concat(history), action, output, accuReward));
 
                 reward += stepReply.getReward();
 
                 if (isHistoryProcessor)
                     getHistoryProcessor().add(Learning.getInput(getMdp(), stepReply.getObservation()));
 
-                history = isHistoryProcessor ? getHistoryProcessor().getHistory() : new INDArray[]{Learning.getInput(getMdp(), stepReply.getObservation())};
+                history = isHistoryProcessor ?
+                        getHistoryProcessor().getHistory() :
+                        new INDArray[]{Learning.getInput(getMdp(), stepReply.getObservation())};
                 accuReward = 0;
             }
             i++;
@@ -105,23 +108,21 @@ public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends Neural
         //a bit of a trick usable because of how the stack is treated to init R
         INDArray input = Learning.getInput(getMdp(), obs);
         if (getMdp().isDone())
-            rewards.add(new MiniTrans(input, null, null, 0));
+            rewards.add(new MiniTrans<>(input, null, null, 0));
         else {
-            INDArray[] output = null;
+            INDArray[] output;
             if (getConf().getTargetDqnUpdateFreq() == -1)
                 output = current.outputAll(input);
             else
                 output = getAsyncGlobal().cloneTarget().outputAll(input);
             double maxQ = Nd4j.max(output[0]).getDouble(0);
-            rewards.add(new MiniTrans(input, null, output, maxQ));
+            rewards.add(new MiniTrans<>(input, null, output, maxQ));
         }
 
         getAsyncGlobal().enqueue(calcGradient(current, rewards), i);
 
-        return new SubEpochReturn<O>(i, obs, reward, current.getLatestScore());
+        return new SubEpochReturn<>(i, obs, reward, current.getLatestScore());
     }
-
-    ;
 
     public abstract Gradient[] calcGradient(NN nn, Stack<MiniTrans<Integer>> rewards);
 }

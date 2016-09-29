@@ -1,6 +1,5 @@
 package org.deeplearning4j.rl4j.learning.sync;
 
-import lombok.Value;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
@@ -10,14 +9,42 @@ import org.nd4j.linalg.factory.Nd4j;
  * A transition is a SARS tuple
  * State, Action, Reward, (isTerminal), State
  */
-@Value
 public class Transition<A> {
 
-    INDArray[] observation;
-    A action;
-    double reward;
-    boolean isTerminal;
-    INDArray nextObservation;
+    private INDArray[] observation;
+    private A action;
+    private double reward;
+    private boolean isTerminal;
+    private INDArray nextObservation;
+
+    public Transition(final INDArray[] observation, final A action, final double reward, final boolean isTerminal,
+                      final INDArray nextObservation) {
+        this.observation = observation;
+        this.action = action;
+        this.reward = reward;
+        this.isTerminal = isTerminal;
+        this.nextObservation = nextObservation;
+    }
+
+    public INDArray[] getObservation() {
+        return observation;
+    }
+
+    public A getAction() {
+        return action;
+    }
+
+    public double getReward() {
+        return reward;
+    }
+
+    public boolean isTerminal() {
+        return isTerminal;
+    }
+
+    public INDArray getNextObservation() {
+        return nextObservation;
+    }
 
     /**
      * concat an array history into a single INDArry of as many channel
@@ -39,7 +66,6 @@ public class Transition<A> {
     public Transition<A> dup(){
         INDArray[] dupObservation = dup(observation);
         INDArray nextObs = nextObservation.dup();
-
         return new Transition<>(dupObservation, action, reward, isTerminal, nextObs);
     }
 
@@ -65,9 +91,7 @@ public class Transition<A> {
     public static INDArray[] append(INDArray[] history, INDArray append){
         INDArray[] appended = new INDArray[history.length];
         appended[0] = append;
-        for (int i = 0; i < history.length-1; i++) {
-            appended[i+1] = history[i];
-        }
+        System.arraycopy(history, 0, appended, 1, history.length - 1);
         return appended;
     }
 

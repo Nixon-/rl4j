@@ -1,9 +1,7 @@
 package org.deeplearning4j.rl4j.learning.sync.qlearning.discrete;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.deeplearning4j.berkeley.Pair;
-import org.deeplearning4j.rl4j.StepReply;
+import org.deeplearning4j.gym.StepReply;
 import org.deeplearning4j.rl4j.learning.Learning;
 import org.deeplearning4j.rl4j.learning.sync.Transition;
 import org.deeplearning4j.rl4j.learning.sync.qlearning.QLearning;
@@ -19,7 +17,7 @@ import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
 import java.util.ArrayList;
-
+import java.util.function.Function;
 
 /**
  * @author rubenfiszel (ruben.fiszel@epfl.ch) 7/18/16.
@@ -31,20 +29,18 @@ import java.util.ArrayList;
  */
 public abstract class QLearningDiscrete<O extends Encodable> extends QLearning<O, Integer, DiscreteSpace> {
 
-    @Getter
     final private QLConfiguration configuration;
-    @Getter
+
     final private DataManager dataManager;
-    @Getter
+
     final private MDP<O, Integer, DiscreteSpace> mdp;
-    @Getter
+
     final private IDQN currentDQN;
-    @Getter
+
     private DQNPolicy<O> policy;
-    @Getter
+
     private EpsGreedy<O, Integer, DiscreteSpace> egPolicy;
-    @Getter
-    @Setter
+
     private IDQN targetDQN;
     private int lastAction;
     private INDArray history[] = null;
@@ -59,16 +55,14 @@ public abstract class QLearningDiscrete<O extends Encodable> extends QLearning<O
         this.dataManager = dataManager;
         currentDQN = dqn;
         targetDQN = dqn.clone();
-        policy = new DQNPolicy(getCurrentDQN());
-        egPolicy = new EpsGreedy(policy, mdp, conf.getUpdateStart(), epsilonNbStep, getRandom(), conf.getMinEpsilon(), this);
+        policy = new DQNPolicy<>(getCurrentDQN());
+        egPolicy = new EpsGreedy<>(policy, mdp, conf.getUpdateStart(), epsilonNbStep, conf.getMinEpsilon(), this);
     }
 
-
     public void postEpoch() {
-
-        if (getHistoryProcessor() != null)
+        if (getHistoryProcessor() != null) {
             getHistoryProcessor().stopMonitor();
-
+        }
     }
 
     public void preEpoch() {
@@ -76,9 +70,11 @@ public abstract class QLearningDiscrete<O extends Encodable> extends QLearning<O
         lastAction = 0;
         accuReward = 0;
 
-        if (getStepCounter() - lastMonitor >= Constants.MONITOR_FREQ && getHistoryProcessor() != null && getDataManager().isSaveData()) {
+        if (getStepCounter() - lastMonitor >= Constants.MONITOR_FREQ && getHistoryProcessor() != null
+                && getDataManager().isSaveData()) {
             lastMonitor = getStepCounter();
-            getHistoryProcessor().startMonitor(getDataManager().getVideoDir() + "/video-" + getEpochCounter() + "-" + getStepCounter() + ".mp4");
+            getHistoryProcessor().startMonitor(getDataManager().getVideoDir() + "/video-" +
+                    getEpochCounter() + "-" + getStepCounter() + ".mp4");
         }
     }
 
@@ -143,7 +139,8 @@ public abstract class QLearningDiscrete<O extends Encodable> extends QLearning<O
 
             INDArray[] nhistory = isHistoryProcessor ? getHistoryProcessor().getHistory() : new INDArray[]{ninput};
 
-            Transition<Integer> trans = new Transition(history, action, accuReward, stepReply.isDone(), nhistory[0]);
+            Transition<Integer> trans = new Transition<>(history, action, accuReward, stepReply.isDone(),
+                    nhistory[0]);
             getExpReplay().store(trans);
 
             if (getStepCounter() > updateStart) {
@@ -155,19 +152,17 @@ public abstract class QLearningDiscrete<O extends Encodable> extends QLearning<O
             accuReward = 0;
         }
 
-        
-        return new QLStepReturn<O>(maxQ, getCurrentDQN().getLatestScore(), stepReply);
-
+        return new QLStepReturn<>(maxQ, getCurrentDQN().getLatestScore(), stepReply);
     }
 
-
-    protected Pair<INDArray, INDArray> setTarget(ArrayList<Transition<Integer>> transitions) {
+    private Pair<INDArray, INDArray> setTarget(ArrayList<Transition<Integer>> transitions) {
         if (transitions.size() == 0)
             throw new IllegalArgumentException("too few transitions");
 
         int size = transitions.size();
 
-        int[] shape = getHistoryProcessor() == null ? getMdp().getObservationSpace().getShape() : getHistoryProcessor().getConf().getShape();
+        int[] shape = getHistoryProcessor() == null ?
+                getMdp().getObservationSpace().getShape() : getHistoryProcessor().getConf().getShape();
         int[] nshape = makeShape(size, shape);
         INDArray obs = Nd4j.create(nshape);
         INDArray nextObs = Nd4j.create(nshape);
@@ -179,39 +174,32 @@ public abstract class QLearningDiscrete<O extends Encodable> extends QLearning<O
             areTerminal[i] = trans.isTerminal();
             actions[i] = trans.getAction();
             obs.putRow(i, Transition.concat(trans.getObservation()));
-            nextObs.putRow(i, Transition.concat(Transition.append(trans.getObservation(), trans.getNextObservation())));
+            nextObs.putRow(i, Transition.concat(Transition.append(trans.getObservation(),
+                    trans.getNextObservation())));
         }
 
         INDArray dqnOutputAr = dqnOutput(obs);
 
         INDArray dqnOutputNext = dqnOutput(nextObs);
-        INDArray targetDqnOutputNext = null;
+        INDArray qFunc;
+        Function<Integer, Double> action;
 
-        INDArray tempQ = null;
-        INDArray getMaxAction = null;
         if (getConfiguration().isDoubleDQN()) {
-            targetDqnOutputNext = targetDqnOutput(nextObs);
-            getMaxAction = Nd4j.argMax(dqnOutputNext, 1);
+            qFunc = targetDqnOutput(nextObs);
+            final INDArray getMaxAction = Nd4j.argMax(dqnOutputNext, 1);
+            action = (i) -> qFunc.getDouble(i, getMaxAction.getInt(i));
+
         } else {
-            tempQ = Nd4j.max(dqnOutputNext, 1);
+            qFunc = Nd4j.max(dqnOutputNext, 1);
+            action = qFunc::getDouble;
         }
 
 
         for (int i = 0; i < size; i++) {
             double yTar = transitions.get(i).getReward();
             if (!areTerminal[i]) {
-                double q = 0;
-                if (getConfiguration().isDoubleDQN()) {
-                    q += targetDqnOutputNext.getDouble(i, getMaxAction.getInt(i));
-                } else
-                    q += tempQ.getDouble(i);
-
-                yTar += getConfiguration().getGamma() * q;
-
+                yTar += getConfiguration().getGamma() * action.apply(i);
             }
-
-
-
             double previousV = dqnOutputAr.getDouble(i, actions[i]);
             double lowB = previousV - getConfiguration().getErrorClamp();
             double highB = previousV + getConfiguration().getErrorClamp();
@@ -220,7 +208,47 @@ public abstract class QLearningDiscrete<O extends Encodable> extends QLearning<O
             dqnOutputAr.putScalar(i, actions[i], clamped);
         }
 
-        return new Pair(obs, dqnOutputAr);
+        return new Pair<>(obs, dqnOutputAr);
+    }
+
+    @Override
+    public DataManager getDataManager() {
+        return dataManager;
+    }
+
+    @Override
+    public DQNPolicy<O> getPolicy() {
+        return this.policy;
+    }
+
+    @Override
+    public EpsGreedy<O, Integer, DiscreteSpace> getEgPolicy() {
+        return this.egPolicy;
+    }
+
+    @Override
+    public IDQN getCurrentDQN() {
+        return this.currentDQN;
+    }
+
+    @Override
+    public MDP<O, Integer, DiscreteSpace> getMdp() {
+        return this.mdp;
+    }
+
+    @Override
+    public QLConfiguration getConfiguration() {
+        return this.configuration;
+    }
+
+    @Override
+    public void setTargetDQN(IDQN newTarget) {
+        this.targetDQN = newTarget;
+    }
+
+    @Override
+    public IDQN getTargetDQN() {
+        return this.targetDQN;
     }
 
 }

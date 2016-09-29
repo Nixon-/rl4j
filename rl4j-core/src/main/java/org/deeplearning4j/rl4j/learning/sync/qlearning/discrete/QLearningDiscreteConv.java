@@ -16,8 +16,6 @@ import org.deeplearning4j.rl4j.util.DataManager;
  */
 public class QLearningDiscreteConv<O extends Encodable> extends QLearningDiscrete<O> {
 
-
-
     public QLearningDiscreteConv(MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn, HistoryProcessor.Configuration hpconf, QLConfiguration conf, DataManager dataManager) {
         super(mdp, dqn, conf, dataManager, conf.getEpsilonNbStep()*hpconf.getSkipFrame());
         setHistoryProcessor(hpconf);

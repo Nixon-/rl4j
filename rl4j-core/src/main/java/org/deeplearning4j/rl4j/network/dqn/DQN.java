@@ -13,11 +13,9 @@ import java.io.OutputStream;
  */
 public class DQN implements IDQN {
 
-    final protected MultiLayerNetwork mln;
+    private final MultiLayerNetwork mln;
 
-    int i = 0;
-
-    public DQN(MultiLayerNetwork mln) {
+    public DQN(final MultiLayerNetwork mln) {
         this.mln = mln;
     }
 
@@ -47,6 +45,7 @@ public class DQN implements IDQN {
         return new INDArray[]{output(batch)};
     }
 
+    @Override
     public DQN clone() {
         return new DQN(mln.clone());
     }

@@ -1,7 +1,5 @@
 package org.deeplearning4j.rl4j.learning.async;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.deeplearning4j.berkeley.Pair;
 import org.deeplearning4j.nn.gradient.Gradient;
 import org.deeplearning4j.rl4j.network.NeuralNet;
@@ -42,10 +40,8 @@ public class AsyncGlobal<NN extends NeuralNet> extends Thread {
     final private NN current;
     final private ConcurrentLinkedQueue<Pair<Gradient[], Integer>> queue;
     final private AsyncConfiguration a3cc;
-    @Getter
     private AtomicInteger T = new AtomicInteger(0);
     private NN target;
-    @Getter @Setter
     private boolean running = true;
 
 
@@ -56,7 +52,17 @@ public class AsyncGlobal<NN extends NeuralNet> extends Thread {
         queue = new ConcurrentLinkedQueue<>();
     }
 
+    public AtomicInteger getT() {
+        return T;
+    }
 
+    public boolean isRunning() {
+        return running;
+    }
+
+    public void setRunning(boolean running) {
+        this.running = running;
+    }
 
     public boolean isTrainingComplete() {
         return T.get() >= a3cc.getMaxStep();
@@ -69,8 +75,6 @@ public class AsyncGlobal<NN extends NeuralNet> extends Thread {
     synchronized public NN cloneTarget() {
         return (NN) target.clone();
     }
-
-
 
     public void enqueue(Gradient[] gradient, Integer nstep) {
             queue.add(new Pair<>(gradient, nstep));

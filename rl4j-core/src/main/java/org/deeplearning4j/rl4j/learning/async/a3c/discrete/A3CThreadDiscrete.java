@@ -1,6 +1,5 @@
 package org.deeplearning4j.rl4j.learning.async.a3c.discrete;
 
-import lombok.Getter;
 import org.deeplearning4j.nn.gradient.Gradient;
 import org.deeplearning4j.rl4j.learning.Learning;
 import org.deeplearning4j.rl4j.learning.async.AsyncGlobal;
@@ -16,7 +15,6 @@ import org.deeplearning4j.rl4j.util.DataManager;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
-import java.util.Random;
 import java.util.Stack;
 
 /**
@@ -24,21 +22,17 @@ import java.util.Stack;
  *
  * Local thread as described in the https://arxiv.org/abs/1602.01783 paper.
  */
-public class A3CThreadDiscrete<O extends Encodable> extends AsyncThreadDiscrete<O, IActorCritic> {
+class A3CThreadDiscrete<O extends Encodable> extends AsyncThreadDiscrete<O, IActorCritic> {
 
-    @Getter
-    final protected A3CDiscrete.A3CConfiguration conf;
-    @Getter
-    final protected MDP<O, Integer, DiscreteSpace> mdp;
-    @Getter
-    final protected AsyncGlobal<IActorCritic> asyncGlobal;
-    @Getter
-    final protected int threadNumber;
-    @Getter
-    final protected DataManager dataManager;
+    private final A3CDiscrete.A3CConfiguration conf;
+    private final MDP<O, Integer, DiscreteSpace> mdp;
+    private final AsyncGlobal<IActorCritic> asyncGlobal;
+    private final int threadNumber;
+    private final DataManager dataManager;
 
 
-    public A3CThreadDiscrete(MDP<O, Integer, DiscreteSpace> mdp, AsyncGlobal<IActorCritic> asyncGlobal, A3CDiscrete.A3CConfiguration a3cc, int threadNumber, DataManager dataManager) {
+    A3CThreadDiscrete(MDP<O, Integer, DiscreteSpace> mdp, AsyncGlobal<IActorCritic> asyncGlobal,
+                      A3CDiscrete.A3CConfiguration a3cc, int threadNumber, DataManager dataManager) {
         super(asyncGlobal, threadNumber);
         this.conf = a3cc;
         this.asyncGlobal = asyncGlobal;
@@ -48,8 +42,33 @@ public class A3CThreadDiscrete<O extends Encodable> extends AsyncThreadDiscrete<
     }
 
     @Override
+    public A3CDiscrete.A3CConfiguration getConf() {
+        return conf;
+    }
+
+    @Override
+    public MDP<O, Integer, DiscreteSpace> getMdp() {
+        return mdp;
+    }
+
+    @Override
+    public AsyncGlobal<IActorCritic> getAsyncGlobal() {
+        return asyncGlobal;
+    }
+
+    @Override
+    public int getThreadNumber() {
+        return threadNumber;
+    }
+
+    @Override
+    public DataManager getDataManager() {
+        return dataManager;
+    }
+
+    @Override
     protected Policy<O, Integer> getPolicy(IActorCritic net) {
-        return new ACPolicy(net, new Random(conf.getSeed()));
+        return new ACPolicy<>(net);
     }
 
     /**

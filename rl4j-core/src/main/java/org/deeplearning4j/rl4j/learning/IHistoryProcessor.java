@@ -1,7 +1,5 @@
 package org.deeplearning4j.rl4j.learning;
 
-import lombok.AllArgsConstructor;
-import lombok.Value;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
 /**
@@ -27,9 +25,6 @@ public interface IHistoryProcessor {
 
     boolean isMonitoring();
 
-
-    @AllArgsConstructor
-    @Value
     class Configuration {
         int historyLength;
         int rescaledWidth;
@@ -108,6 +103,13 @@ public interface IHistoryProcessor {
          */
         public int getOffsetY() {
             return this.offsetY;
+        }
+
+        /**
+         * @return  Skip Frame value.
+         */
+        public int getSkipFrame(){
+            return this.skipFrame;
         }
     }
 }

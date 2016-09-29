@@ -4,6 +4,7 @@ import org.deeplearning4j.rl4j.network.ac.IActorCritic;
 import org.deeplearning4j.rl4j.space.Encodable;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 /**
@@ -15,13 +16,12 @@ import java.util.Random;
 public class ACPolicy<O extends Encodable> extends Policy<O, Integer> {
 
     final private IActorCritic IActorCritic;
-    Random rd;
+    private Random rd;
 
-    public ACPolicy(IActorCritic IActorCritic, Random rd) {
+    public ACPolicy(IActorCritic IActorCritic) {
         this.IActorCritic = IActorCritic;
-        this.rd = rd;
+        this.rd = new SecureRandom();
     }
-
 
     public Integer nextAction(INDArray input) {
         INDArray output = IActorCritic.outputAll(input)[1];
@@ -39,8 +39,8 @@ public class ACPolicy<O extends Encodable> extends Policy<O, Integer> {
     }
 
     public void save(String filename) {
+        // TODO Fix this method
         //dqn.save(filename);
     }
-
 
 }

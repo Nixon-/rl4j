@@ -1,6 +1,5 @@
 package org.deeplearning4j.rl4j.learning;
 
-import lombok.Getter;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.bytedeco.javacv.*;
 import org.datavec.image.loader.NativeImageLoader;
@@ -23,12 +22,12 @@ import static org.bytedeco.javacpp.opencv_imgproc.*;
 public class HistoryProcessor implements IHistoryProcessor {
 
     final private Logger log = LoggerFactory.getLogger("HistoryProcessor");
-    @Getter
+
     final private Configuration conf;
     final private OpenCVFrameConverter openCVFrameConverter = new OpenCVFrameConverter.ToMat();
     private CircularFifoQueue<INDArray> history;
     private FFmpegFrameRecorder fmpegFrameRecorder = null;
-    public static BasicNDArrayCompressor compressor = BasicNDArrayCompressor.getInstance().setDefaultCompression("UINT8");
+    private static BasicNDArrayCompressor compressor = BasicNDArrayCompressor.getInstance().setDefaultCompression("UINT8");
 
 
     public HistoryProcessor(Configuration conf) {
@@ -121,20 +120,11 @@ public class HistoryProcessor implements IHistoryProcessor {
             out = new NativeImageLoader(conf.getCroppingHeight(), conf.getCroppingWidth()).asMatrix(cropped);
         } catch (IOException e) {
             e.printStackTrace();
+            throw new IllegalStateException("Illegal State, can't proceed", e);
         }
         //System.out.println(out.shapeInfoToString());
         out = out.reshape(1, conf.getCroppingHeight(), conf.getCroppingWidth());
-        INDArray compressed = compressor.compress(out);
-        return compressed;
-    }
-
-
-    public void waitKP() {
-        try {
-            System.in.read();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        return compressor.compress(out);
     }
 
     public void show(Mat m) {
@@ -142,6 +132,4 @@ public class HistoryProcessor implements IHistoryProcessor {
         CanvasFrame canvas = new CanvasFrame("LOL", 1);
         canvas.showImage(converter.convert(m));
     }
-
-
 }

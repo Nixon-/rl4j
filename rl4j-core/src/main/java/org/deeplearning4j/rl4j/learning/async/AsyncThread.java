@@ -1,8 +1,6 @@
 package org.deeplearning4j.rl4j.learning.async;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Value;
+
 import org.deeplearning4j.rl4j.learning.HistoryProcessor;
 import org.deeplearning4j.rl4j.learning.IHistoryProcessor;
 import org.deeplearning4j.rl4j.learning.Learning;
@@ -28,22 +26,30 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AsyncThread<O extends Encodable, A, AS extends ActionSpace<A>, NN extends NeuralNet> extends Thread implements StepCountable {
 
-    final protected Logger log;
-    @Getter
+    private final Logger log;
     private int stepCounter = 0;
-    @Getter
     private int epochCounter = 0;
-    @Getter
     private IHistoryProcessor historyProcessor;
 
-    public AsyncThread(AsyncGlobal<NN> asyncGlobal, int threadNumber) {
-
+    AsyncThread(AsyncGlobal<NN> asyncGlobal, int threadNumber) {
         log = LoggerFactory.getLogger("ThreadNum-" + threadNumber);
-
     }
 
     public void setHistoryProcessor(IHistoryProcessor.Configuration conf) {
         historyProcessor = new HistoryProcessor(conf);
+    }
+
+    @Override
+    public int getStepCounter() {
+        return stepCounter;
+    }
+
+    public int getEpochCounter() {
+        return epochCounter;
+    }
+
+    public IHistoryProcessor getHistoryProcessor() {
+        return historyProcessor;
     }
 
     @Override
@@ -97,23 +103,74 @@ public abstract class AsyncThread<O extends Encodable, A, AS extends ActionSpace
 
     protected abstract SubEpochReturn<O> trainSubEpoch(O obs, int nstep);
 
-    @AllArgsConstructor
-    @Value
-    public static class SubEpochReturn<O> {
-        int steps;
-        O lastObs;
-        double reward;
-        double score;
+    static class SubEpochReturn<O> {
+        private final int steps;
+        private final O lastObs;
+        private final double reward;
+        private final double score;
+
+        public SubEpochReturn(final int steps, final O lastObs, final double reward, final double score) {
+            this.steps = steps;
+            this.lastObs = lastObs;
+            this.reward = reward;
+            this.score = score;
+        }
+
+        public int getSteps() {
+            return steps;
+        }
+
+        public O getLastObs() {
+            return lastObs;
+        }
+
+        public double getReward() {
+            return reward;
+        }
+
+        public double getScore() {
+            return score;
+        }
     }
 
-    @AllArgsConstructor
-    @Value
-    public static class AsyncStatEntry implements DataManager.StatEntry {
-        int stepCounter;
-        int epochCounter;
-        double reward;
-        int episodeLength;
-        double score;
+    private static class AsyncStatEntry implements DataManager.StatEntry {
+        private final int stepCounter;
+        private final int epochCounter;
+        private final double reward;
+        private final int episodeLength;
+        private final double score;
+
+        AsyncStatEntry(final int stepCounter, final int epochCounter, final double reward,
+                       final int episodeLength, final double score) {
+            this.stepCounter = stepCounter;
+            this.epochCounter = epochCounter;
+            this.reward = reward;
+            this.episodeLength = episodeLength;
+            this.score = score;
+        }
+
+        @Override
+        public int getStepCounter() {
+            return stepCounter;
+        }
+
+        @Override
+        public int getEpochCounter() {
+            return epochCounter;
+        }
+
+        @Override
+        public double getReward() {
+            return reward;
+        }
+
+        public int getEpisodeLength() {
+            return episodeLength;
+        }
+
+        public double getScore() {
+            return score;
+        }
     }
 
 }

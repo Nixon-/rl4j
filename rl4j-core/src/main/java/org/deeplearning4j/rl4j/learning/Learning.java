@@ -1,9 +1,6 @@
 package org.deeplearning4j.rl4j.learning;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Value;
-import org.deeplearning4j.rl4j.StepReply;
+import org.deeplearning4j.gym.StepReply;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.network.NeuralNet;
 import org.deeplearning4j.rl4j.space.ActionSpace;
@@ -14,7 +11,6 @@ import org.nd4j.linalg.factory.Nd4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Random;
 
 /**
  * @author rubenfiszel (ruben.fiszel@epfl.ch) on 7/27/16.
@@ -25,27 +21,17 @@ import java.util.Random;
  * Big majority of training method should inherit this
  *
  */
-public abstract class Learning<O extends Encodable, A, AS extends ActionSpace<A>, NN extends NeuralNet> implements ILearning<O, A, AS>, NeuralNetFetchable<NN>{
+public abstract class Learning<O extends Encodable, A, AS extends ActionSpace<A>, NN extends NeuralNet>
+        implements ILearning<O, A, AS>, NeuralNetFetchable<NN>{
 
-
-    @Getter
     final private Logger logger;
-    @Getter
-    final private Random random;
-
-    @Getter
     private int stepCounter = 0;
-    @Getter
     private int epochCounter = 0;
 
-    @Getter
     private IHistoryProcessor historyProcessor = null;
 
     public Learning(LConfiguration conf) {
-
-        random = new Random(conf.getSeed());
         logger = LoggerFactory.getLogger(this.getClass());
-
     }
 
     public static Integer getMaxAction(INDArray vector) {
@@ -61,7 +47,8 @@ public abstract class Learning<O extends Encodable, A, AS extends ActionSpace<A>
             return arr.reshape(shape);
     }
 
-    public static <O extends Encodable, A, AS extends ActionSpace<A>> InitMdp<O> initMdp(MDP<O, A, AS> mdp, IHistoryProcessor hp) {
+    public static <O extends Encodable, A, AS extends ActionSpace<A>> InitMdp<O>
+    initMdp(MDP<O, A, AS> mdp, IHistoryProcessor hp) {
 
         O obs = mdp.reset();
 
@@ -78,43 +65,49 @@ public abstract class Learning<O extends Encodable, A, AS extends ActionSpace<A>
         while (step < requiredFrame) {
             INDArray input = Learning.getInput(mdp, obs);
 
-            if (isHistoryProcessor)
-                hp.record(input);
+            // History processor can't be null here, or else requireFrame would be 0, and this
+            // loop would never execute.
+            hp.record(input);
 
             A action = mdp.getActionSpace().noOp(); //by convention should be the NO_OP
-            if (step % skipFrame == 0 && isHistoryProcessor)
+            if (step % skipFrame == 0) {
                 hp.add(input);
+            }
 
             StepReply<O> stepReply = mdp.step(action);
             reward += stepReply.getReward();
             nextO = stepReply.getObservation();
 
             step++;
-
         }
-
-        return new InitMdp(step, nextO, reward);
-
+        return new InitMdp<>(step, nextO, reward);
     }
 
     public static int[] makeShape(int size, int[] shape) {
         int[] nshape = new int[shape.length + 1];
         nshape[0] = size;
-        for (int i = 0; i < shape.length; i++) {
-            nshape[i + 1] = shape[i];
-        }
+        System.arraycopy(shape, 0, nshape, 1, shape.length);
         return nshape;
+    }
+
+    @Override
+    public int getStepCounter() {
+        return stepCounter;
+    }
+
+    protected int getEpochCounter() {
+        return epochCounter;
     }
 
     protected abstract DataManager getDataManager();
 
     public abstract NN getNeuralNet();
 
-    public int incrementStep() {
+    protected int incrementStep() {
         return stepCounter++;
     }
 
-    public int incrementEpoch() {
+    protected int incrementEpoch() {
         return epochCounter++;
     }
 
@@ -122,20 +115,54 @@ public abstract class Learning<O extends Encodable, A, AS extends ActionSpace<A>
         historyProcessor = new HistoryProcessor(conf);
     }
 
-    public INDArray getInput(O obs) {
+    public Logger getLogger() {
+        return logger;
+    }
+
+    protected INDArray getInput(O obs) {
         return getInput(getMdp(), obs);
     }
 
-    public InitMdp<O> initMdp() {
+    protected InitMdp<O> initMdp() {
         return initMdp(getMdp(), getHistoryProcessor());
     }
 
-    @AllArgsConstructor
-    @Value
-    public static class InitMdp<O> {
-        int steps;
-        O lastObs;
-        double reward;
+    public IHistoryProcessor getHistoryProcessor(){
+        return this.historyProcessor;
+    }
+
+    public static class InitMdp<E> {
+        private int steps;
+        private E lastObs;
+        private double reward;
+
+        InitMdp(final int steps, final E lastObs, final double reward) {
+            this.steps = steps;
+            this.lastObs = lastObs;
+            this.reward = reward;
+        }
+
+        /**
+         * @return  steps, whatever that is.
+         */
+        public int getSteps() {
+            return this.steps;
+        }
+
+        /**
+         * @return  Last Observation.
+         */
+        public E getLastObs() {
+            return this.lastObs;
+        }
+
+        /**
+         * @return  Reward.
+         */
+        public double getReward() {
+            return this.reward;
+        }
+
     }
 
 }

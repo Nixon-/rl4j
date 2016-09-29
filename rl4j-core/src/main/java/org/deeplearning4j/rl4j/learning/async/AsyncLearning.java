@@ -5,6 +5,8 @@ import org.deeplearning4j.rl4j.network.NeuralNet;
 import org.deeplearning4j.rl4j.space.ActionSpace;
 import org.deeplearning4j.rl4j.space.Encodable;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author rubenfiszel (ruben.fiszel@epfl.ch) 7/25/16.
  *
@@ -14,8 +16,11 @@ import org.deeplearning4j.rl4j.space.Encodable;
  * -periodically evaluate the model of the global thread for monitoring purposes
  *
  */
-public abstract class AsyncLearning<O extends Encodable, A, AS extends ActionSpace<A>, NN extends NeuralNet> extends Learning<O, A, AS, NN> {
+public abstract class AsyncLearning<O extends Encodable, A, AS extends ActionSpace<A>, NN extends NeuralNet>
+        extends Learning<O, A, AS, NN> {
 
+
+    private static final Long WAIT_TIMER_MS = TimeUnit.SECONDS.toMillis(20);
 
     public AsyncLearning(AsyncConfiguration conf) {
         super(conf);
@@ -25,17 +30,17 @@ public abstract class AsyncLearning<O extends Encodable, A, AS extends ActionSpa
 
     protected abstract AsyncThread newThread(int i);
 
-    protected abstract AsyncGlobal<NN> getAsyncGlobal();
+    public abstract AsyncGlobal<NN> getAsyncGlobal();
 
-    protected void startGlobalThread() {
+    private void startGlobalThread() {
         getAsyncGlobal().start();
     }
 
-    protected boolean isTrainingComplete() {
+    private boolean isTrainingComplete() {
         return getAsyncGlobal().isTrainingComplete();
     }
 
-    public void launchThreads() {
+    private void launchThreads() {
         startGlobalThread();
         for (int i = 0; i < getConfiguration().getNumThread(); i++) {
             newThread(i).start();
@@ -60,7 +65,7 @@ public abstract class AsyncLearning<O extends Encodable, A, AS extends ActionSpa
                 getPolicy().play(getMdp(), getHistoryProcessor());
                 getDataManager().writeInfo(this);
                 try {
-                    wait(20000);
+                    wait(WAIT_TIMER_MS);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

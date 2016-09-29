@@ -40,9 +40,8 @@ public class ExpReplay<A> implements IExpReplay<A> {
         }
 
         ArrayList<Transition<A>> batch = new ArrayList<>(size);
-        Iterator<Integer> iter = intSet.iterator();
-        while (iter.hasNext()) {
-            Transition<A> trans = storage.get(iter.next());
+        for (Integer anIntSet : intSet) {
+            Transition<A> trans = storage.get(anIntSet);
             batch.add(trans.dup());
         }
 

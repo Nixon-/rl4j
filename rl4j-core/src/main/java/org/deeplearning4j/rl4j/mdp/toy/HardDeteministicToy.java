@@ -1,7 +1,6 @@
 package org.deeplearning4j.rl4j.mdp.toy;
 
-import lombok.Getter;
-import org.deeplearning4j.rl4j.StepReply;
+import org.deeplearning4j.gym.StepReply;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.network.dqn.IDQN;
 import org.deeplearning4j.rl4j.space.ArrayObservationSpace;
@@ -20,16 +19,17 @@ import java.util.logging.Logger;
  * A toy MDP where the agent should find the maximum to get the reward.
  * Useful to debug as it's very fast to run
  */
-public class HardDeteministicToy implements MDP<HardToyState, Integer, DiscreteSpace> {
+class HardDeteministicToy implements MDP<HardToyState, Integer, DiscreteSpace> {
 
     final private static int MAX_STEP = 20;
     final private static int SEED = 1234;
     final private static int ACTION_SIZE = 10;
     final private static HardToyState[] states = genToyStates(MAX_STEP, SEED);
-    @Getter
+
     private DiscreteSpace actionSpace = new DiscreteSpace(ACTION_SIZE);
-    @Getter
-    private ObservationSpace<HardToyState> observationSpace = new ArrayObservationSpace(new int[]{ACTION_SIZE});
+
+    private ObservationSpace<HardToyState> observationSpace =
+            new ArrayObservationSpace<>(new int[]{ACTION_SIZE});
     private HardToyState hardToyState;
 
     public static void printTest(IDQN idqn) {
@@ -41,7 +41,7 @@ public class HardDeteministicToy implements MDP<HardToyState, Integer, DiscreteS
         Logger.getAnonymousLogger().info(output.toString());
     }
 
-    public static int maxIndex(double[] values) {
+    private static int maxIndex(double[] values) {
         double maxValue = -Double.MIN_VALUE;
         int maxIndex = -1;
         for (int i = 0; i < values.length; i++) {
@@ -53,7 +53,15 @@ public class HardDeteministicToy implements MDP<HardToyState, Integer, DiscreteS
         return maxIndex;
     }
 
-    public static HardToyState[] genToyStates(int size, int seed) {
+    public ObservationSpace<HardToyState> getObservationSpace() {
+        return this.observationSpace;
+    }
+
+    public DiscreteSpace getActionSpace() {
+        return this.actionSpace;
+    }
+
+    private static HardToyState[] genToyStates(int size, int seed) {
 
         Random rd = new Random(seed);
         HardToyState[] hardToyStates = new HardToyState[size];
@@ -75,7 +83,6 @@ public class HardDeteministicToy implements MDP<HardToyState, Integer, DiscreteS
 
     @Override
     public boolean isDone() {
-
         return hardToyState.getStep() == MAX_STEP - 1;
     }
 
@@ -85,11 +92,9 @@ public class HardDeteministicToy implements MDP<HardToyState, Integer, DiscreteS
     }
 
     public StepReply<HardToyState> step(Integer a) {
-        double reward = 0;
-        if (a == maxIndex(hardToyState.getValues()))
-            reward += 1;
         hardToyState = states[hardToyState.getStep() + 1];
-        return new StepReply(hardToyState, reward, isDone(), new JSONObject("{}"));
+        return new StepReply<>(hardToyState, a == maxIndex(hardToyState.getValues()) ? 1 : 0,
+                isDone(), new JSONObject("{}"));
     }
 
     public HardDeteministicToy newInstance() {

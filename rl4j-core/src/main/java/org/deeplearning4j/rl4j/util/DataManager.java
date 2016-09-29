@@ -2,9 +2,6 @@ package org.deeplearning4j.rl4j.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Value;
 import org.deeplearning4j.berkeley.Pair;
 import org.deeplearning4j.rl4j.learning.ILearning;
 import org.deeplearning4j.rl4j.learning.Learning;
@@ -34,7 +31,6 @@ public class DataManager {
     final private String home = System.getProperty("user.home");
     final private ObjectMapper mapper = new ObjectMapper();
     private String dataRoot = home + "/" + Constants.DATA_DIR;
-    @Getter
     private boolean saveData;
     private String currentDir;
 
@@ -147,7 +143,7 @@ public class DataManager {
             e.printStackTrace();
         }
 
-        return new Pair<IDQN, C>(dqn, conf);
+        return new Pair<>(dqn, conf);
     }
 
     public static <C> Pair<IDQN, C> load(String path, Class<C> cClass) {
@@ -171,7 +167,8 @@ public class DataManager {
         createSubdir();
     }
 
-    //FIXME race condition if you create them at the same time where checking if dir exists is not atomic with the creation
+    //FIXME race condition if you create them at the same time where checking if dir exists is
+    // not atomic with the creation
     public String createSubdir() {
 
         if (!saveData)
@@ -224,6 +221,10 @@ public class DataManager {
         return currentDir + "/" + Constants.STATISTIC_FILENAME;
     }
 
+    public boolean isSaveData() {
+        return saveData;
+    }
+
     public void appendStat(StatEntry statEntry) {
 
         if (!saveData)
@@ -255,7 +256,8 @@ public class DataManager {
 
         Path infoPath = Paths.get(getInfo());
 
-        Info info = new Info(iLearning.getClass().getSimpleName(), iLearning.getMdp().getClass().getSimpleName(), iLearning.getConfiguration(), iLearning.getStepCounter(), System.currentTimeMillis());
+        Info info = new Info(iLearning.getClass().getSimpleName(), iLearning.getMdp().getClass().getSimpleName(),
+                iLearning.getConfiguration(), iLearning.getStepCounter(), System.currentTimeMillis());
         String toWrite = toJson(info);
 
         try {
@@ -291,19 +293,44 @@ public class DataManager {
     //please use Lombok @Value (see QLStatEntry)
     public interface StatEntry {
         int getEpochCounter();
-
         int getStepCounter();
-
         double getReward();
     }
 
-    @AllArgsConstructor
-    @Value
-    public static class Info {
-        String trainingName;
-        String mdpName;
-        ILearning.LConfiguration conf;
-        int stepCounter;
-        long millisTime;
+    private static class Info {
+        private final String trainingName;
+        private final String mdpName;
+        private final ILearning.LConfiguration conf;
+        private final int stepCounter;
+        private final long millisTime;
+
+        Info(final String trainingName, final String mdpName, final ILearning.LConfiguration conf,
+             final int stepCounter, final long millisTime) {
+            this.trainingName = trainingName;
+            this.mdpName = mdpName;
+            this.conf = conf;
+            this.stepCounter = stepCounter;
+            this.millisTime = millisTime;
+        }
+
+        public String getTrainingName() {
+            return trainingName;
+        }
+
+        public String getMdpName() {
+            return mdpName;
+        }
+
+        public ILearning.LConfiguration getConf() {
+            return conf;
+        }
+
+        public int getStepCounter() {
+            return stepCounter;
+        }
+
+        public long getMillisTime() {
+            return millisTime;
+        }
     }
 }

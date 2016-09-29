@@ -1,6 +1,5 @@
 package org.deeplearning4j.rl4j.network.ac;
 
-import lombok.Value;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.ComputationGraphConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
@@ -20,13 +19,28 @@ import org.nd4j.linalg.lossfunctions.LossFunctions;
  *
  * Standard factory for Conv net Actor Critic
  */
-@Value
 public class ActorCriticFactoryCompGraphStdConv implements ActorCriticFactoryCompGraph {
 
+    private Configuration conf;
 
-    Configuration conf;
+    public ActorCriticFactoryCompGraphStdConv(final Configuration conf) {
+        this.conf = conf;
+    }
+
+    public ActorCriticFactoryCompGraphStdConv setDefaultConfiguration(final Configuration config) {
+        conf = config;
+        return this;
+    }
+
+    public Configuration getConf() {
+        return this.conf;
+    }
 
     public ActorCriticCompGraph buildActorCritic(int shapeInputs[], int numOutputs) {
+        return buildActorCritic(shapeInputs, numOutputs, this.getConf());
+    }
+
+    public static ActorCriticCompGraph buildActorCritic(int shapeInputs[], int numOutputs, final Configuration config) {
 
         if (shapeInputs.length == 1)
             throw new AssertionError("Impossible to apply convolutional layer on a shape == 1");
@@ -35,13 +49,13 @@ public class ActorCriticFactoryCompGraphStdConv implements ActorCriticFactoryCom
                 .seed(Constants.NEURAL_NET_SEED)
                 .iterations(1)
                 .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
-                .learningRate(conf.getLearningRate())
+                .learningRate(config.getLearningRate())
                 //.updater(Updater.NESTEROVS).momentum(0.9)
-                //.updater(Updater.RMSPROP).rmsDecay(conf.getRmsDecay())
+                //.updater(Updater.RMSPROP).rmsDecay(config.getRmsDecay())
                 .updater(Updater.ADAM)
                 .weightInit(WeightInit.XAVIER)
                 .regularization(true)
-                .l2(conf.getL2())
+                .l2(config.getL2())
                 .graphBuilder()
                 .setInputTypes(InputType.convolutional(shapeInputs[1], shapeInputs[2], shapeInputs[0]))
                 .addInputs("input")
@@ -85,14 +99,28 @@ public class ActorCriticFactoryCompGraphStdConv implements ActorCriticFactoryCom
         return new ActorCriticCompGraph(model);
     }
 
-
-    @Value
     public static class Configuration {
+        private final double learningRate;
+        private final double l2;
+        private final double rmsDecay;
 
-        double learningRate;
-        double l2;
-        double rmsDecay;
+        public Configuration(double learningRate, double l2, double rmsDecay) {
+            this.learningRate = learningRate;
+            this.l2 = l2;
+            this.rmsDecay = rmsDecay;
+        }
 
+        public double getLearningRate() {
+            return learningRate;
+        }
+
+        public double getL2() {
+            return l2;
+        }
+
+        public double getRmsDecay() {
+            return rmsDecay;
+        }
     }
 
 }

@@ -1,9 +1,5 @@
 package org.deeplearning4j.rl4j.learning.async.a3c.discrete;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import org.deeplearning4j.rl4j.learning.async.AsyncConfiguration;
 import org.deeplearning4j.rl4j.learning.async.AsyncGlobal;
 import org.deeplearning4j.rl4j.learning.async.AsyncLearning;
@@ -27,51 +23,126 @@ import org.deeplearning4j.rl4j.util.DataManager;
  */
 public abstract class A3CDiscrete<O extends Encodable> extends AsyncLearning<O, Integer, DiscreteSpace, IActorCritic> {
 
-    @Getter
     final public A3CConfiguration configuration;
-    @Getter
     final protected MDP<O, Integer, DiscreteSpace> mdp;
     final private IActorCritic iActorCritic;
-    @Getter
-    final private AsyncGlobal asyncGlobal;
-    @Getter
+    final private AsyncGlobal<IActorCritic> asyncGlobal;
     final private Policy<O, Integer> policy;
-    @Getter
     final private DataManager dataManager;
 
-    public A3CDiscrete(MDP<O, Integer, DiscreteSpace> mdp, IActorCritic iActorCritic, A3CConfiguration conf, DataManager dataManager) {
+    A3CDiscrete(MDP<O, Integer, DiscreteSpace> mdp, IActorCritic iActorCritic,
+                A3CConfiguration conf, DataManager dataManager) {
         super(conf);
         this.iActorCritic = iActorCritic;
         this.mdp = mdp;
         this.configuration = conf;
         this.dataManager = dataManager;
-        policy = new ACPolicy<>(iActorCritic, getRandom());
-        asyncGlobal = new AsyncGlobal<>(iActorCritic, conf);
+        policy = new ACPolicy<>(iActorCritic);
+        asyncGlobal = new AsyncGlobal<IActorCritic>(iActorCritic, conf);
     }
 
+    @Override
+    public A3CConfiguration getConfiguration() {
+        return configuration;
+    }
 
-    protected AsyncThread newThread(int i) {
-        return new A3CThreadDiscrete(mdp.newInstance(), asyncGlobal, getConfiguration(), i, dataManager);
+    @Override
+    public MDP<O, Integer, DiscreteSpace> getMdp() {
+        return mdp;
+    }
+
+    @Override
+    public AsyncGlobal<IActorCritic> getAsyncGlobal() {
+        return asyncGlobal;
+    }
+
+    @Override
+    public Policy<O, Integer> getPolicy() {
+        return policy;
+    }
+
+    @Override
+    public DataManager getDataManager() {
+        return dataManager;
+    }
+
+    protected AsyncThread<O, Integer, DiscreteSpace, ?>  newThread(int i) {
+        return new A3CThreadDiscrete<>(mdp.newInstance(), asyncGlobal, getConfiguration(), i, dataManager);
     }
 
     public IActorCritic getNeuralNet() {
         return iActorCritic;
     }
 
-    @Data
-    @AllArgsConstructor
-    @EqualsAndHashCode(callSuper = false)
-    public static class A3CConfiguration implements AsyncConfiguration {
+    static class A3CConfiguration implements AsyncConfiguration {
 
-        int seed;
-        int maxEpochStep;
-        int maxStep;
-        int numThread;
-        int nstep;
-        int updateStart;
-        double rewardFactor;
-        double gamma;
-        double errorClamp;
+        private final int seed;
+        private final int maxEpochStep;
+        private final int maxStep;
+        private final int numThread;
+        private final int nstep;
+        private final int updateStart;
+        private final double rewardFactor;
+        private final double gamma;
+        private final double errorClamp;
+
+        public A3CConfiguration(int seed, int maxEpochStep, int maxStep, int numThread, int nstep, int updateStart,
+                                double rewardFactor, double gamma, double errorClamp) {
+            this.seed = seed;
+            this.maxEpochStep = maxEpochStep;
+            this.maxStep = maxStep;
+            this.numThread = numThread;
+            this.nstep = nstep;
+            this.updateStart = updateStart;
+            this.rewardFactor = rewardFactor;
+            this.gamma = gamma;
+            this.errorClamp = errorClamp;
+        }
+
+        @Override
+        public int getSeed() {
+            return seed;
+        }
+
+        @Override
+        public int getMaxEpochStep() {
+            return maxEpochStep;
+        }
+
+        @Override
+        public int getMaxStep() {
+            return maxStep;
+        }
+
+        @Override
+        public int getNumThread() {
+            return numThread;
+        }
+
+        @Override
+        public int getNstep() {
+            return nstep;
+        }
+
+        @Override
+        public int getUpdateStart() {
+            return updateStart;
+        }
+
+        @Override
+        public double getRewardFactor() {
+            return rewardFactor;
+        }
+
+        @Override
+        public double getGamma() {
+            return gamma;
+        }
+
+        @Override
+        public double getErrorClamp() {
+            return errorClamp;
+        }
 
         public int getTargetDqnUpdateFreq(){
             return -1;

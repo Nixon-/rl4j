@@ -16,7 +16,7 @@ import org.deeplearning4j.rl4j.space.ObservationSpace;
  *
  * Wrapper over the client of gym-java-client
  */
-public class GymEnv<O, A, AS extends ActionSpace<A>> implements MDP<O, A, AS> {
+class GymEnv<O, A, AS extends ActionSpace<A>> implements MDP<O, A, AS> {
 
     final public static String GYM_MONITOR_DIR = "/tmp/gym-dqn";
 
@@ -49,8 +49,9 @@ public class GymEnv<O, A, AS extends ActionSpace<A>> implements MDP<O, A, AS> {
     public AS getActionSpace() {
         if (actionTransformer == null)
             return client.getActionSpace();
-        else
-            return (AS) actionTransformer;
+        else {
+            return (AS)actionTransformer;
+        }
     }
 
     public StepReply<O> step(A action) {

@@ -1,7 +1,5 @@
 package org.deeplearning4j.rl4j.learning.async;
 
-import lombok.AllArgsConstructor;
-import lombok.Value;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
 /**
@@ -14,11 +12,32 @@ import org.nd4j.linalg.api.ndarray.INDArray;
  * following the paper implementation https://arxiv.org/abs/1602.01783 paper.
  *
  */
-@AllArgsConstructor
-@Value
 public class MiniTrans<A> {
-    INDArray obs;
-    A action;
-    INDArray[] output;
-    double reward;
+    private final INDArray obs;
+    private final A action;
+    private final INDArray[] output;
+    private final double reward;
+
+    MiniTrans(final INDArray obs, final A action, final INDArray[] output, final double reward) {
+        this.obs = obs;
+        this.action = action;
+        this.output = output;
+        this.reward = reward;
+    }
+
+    public INDArray getObs() {
+        return obs;
+    }
+
+    public A getAction() {
+        return action;
+    }
+
+    public INDArray[] getOutput() {
+        return output;
+    }
+
+    public double getReward() {
+        return reward;
+    }
 }

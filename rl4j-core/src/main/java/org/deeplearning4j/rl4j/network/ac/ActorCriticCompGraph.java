@@ -13,10 +13,9 @@ import java.io.OutputStream;
  *
  * Standard implementation of ActorCriticCompGraph
  */
-public class ActorCriticCompGraph implements IActorCritic {
+class ActorCriticCompGraph implements IActorCritic {
 
-    final protected ComputationGraph cg;
-
+    private final ComputationGraph cg;
 
     public ActorCriticCompGraph(ComputationGraph cg) {
         this.cg = cg;
@@ -31,6 +30,7 @@ public class ActorCriticCompGraph implements IActorCritic {
         return cg.output(batch);
     }
 
+    @Override
     public ActorCriticCompGraph clone() {
         return new ActorCriticCompGraph(cg.clone());
     }
@@ -41,7 +41,6 @@ public class ActorCriticCompGraph implements IActorCritic {
         cg.computeGradientAndScore();
         return new Gradient[]{cg.gradient()};
     }
-
 
     public void applyGradient(Gradient[] gradient, int batchSize) {
         cg.getUpdater().update(cg, gradient[0], 1, batchSize);

@@ -1,6 +1,5 @@
 package org.deeplearning4j.rl4j;
 
-import lombok.Value;
 import org.json.JSONObject;
 
 /**
@@ -9,12 +8,34 @@ import org.json.JSONObject;
  *
  *  StepReply is the container for the data returned after each step(action).
  */
-@Value
 public class StepReply<T> {
 
-    T observation;
-    double reward;
-    boolean done;
-    JSONObject info;
+    private T observation;
+    private double reward;
+    private boolean done;
+    private JSONObject info;
+
+    public StepReply(final T observation, final double reward, final boolean done, final JSONObject info) {
+        this.observation = observation;
+        this.reward = reward;
+        this.done = done;
+        this.info = info;
+    }
+
+    public T getObservation() {
+        return this.observation;
+    }
+
+    public double getReward() {
+        return this.reward;
+    }
+
+    public boolean getDone() {
+        return this.done;
+    }
+
+    public JSONObject getInfo() {
+        return this.info;
+    }
 
 }

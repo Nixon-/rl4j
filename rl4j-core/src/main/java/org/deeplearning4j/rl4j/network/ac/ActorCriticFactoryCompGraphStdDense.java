@@ -1,6 +1,5 @@
 package org.deeplearning4j.rl4j.network.ac;
 
-import lombok.Value;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.ComputationGraphConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
@@ -19,39 +18,55 @@ import org.nd4j.linalg.lossfunctions.LossFunctions;
  *
  *
  */
-@Value
 public class ActorCriticFactoryCompGraphStdDense implements ActorCriticFactoryCompGraph {
 
-    Configuration conf;
+    private Configuration conf;
+
+    ActorCriticFactoryCompGraphStdDense(Configuration conf) {
+        this.conf = conf;
+    }
+
+    public ActorCriticFactoryCompGraphStdDense setDefaultConfiguration(final Configuration config) {
+        conf = config;
+        return this;
+    }
+
+    public Configuration getConf() {
+        return this.conf;
+    }
 
     public ActorCriticCompGraph buildActorCritic(int[] numInputs, int numOutputs) {
+        return buildActorCritic(numInputs, numOutputs, this.getConf());
+    }
+
+    public static ActorCriticCompGraph buildActorCritic(int[] numInputs, int numOutputs, final Configuration config) {
 
         ComputationGraphConfiguration.GraphBuilder confB = new NeuralNetConfiguration.Builder()
                 .seed(Constants.NEURAL_NET_SEED)
                 .iterations(1)
                 .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
-                .learningRate(conf.getLearningRate())
+                .learningRate(config.getLearningRate())
                 //.updater(Updater.NESTEROVS).momentum(0.9)
-                //.updater(Updater.RMSPROP).rmsDecay(conf.getRmsDecay())
+                //.updater(Updater.RMSPROP).rmsDecay(config.getRmsDecay())
                 .updater(Updater.ADAM)
                 .weightInit(WeightInit.XAVIER)
                 .regularization(true)
-                .l2(conf.getL2())
+                .l2(config.getL2())
                 .graphBuilder()
                 .setInputTypes(InputType.feedForward(numInputs[0]))
                 .addInputs("input")
                 .addLayer("0", new DenseLayer.Builder()
                         .nIn(numInputs[0])
-                        .nOut(conf.getNumHiddenNodes())
+                        .nOut(config.getNumHiddenNodes())
                         .activation("relu")
                         .build(), "input");
 
 
-        for (int i = 1; i < conf.getNumLayer(); i++) {
+        for (int i = 1; i < config.getNumLayer(); i++) {
             confB
                     .addLayer(i + "", new DenseLayer.Builder()
-                            .nIn(conf.getNumHiddenNodes())
-                            .nOut(conf.getNumHiddenNodes())
+                            .nIn(config.getNumHiddenNodes())
+                            .nOut(config.getNumHiddenNodes())
                             .activation("relu")
                             .build(), (i - 1) + "");
         }
@@ -60,12 +75,12 @@ public class ActorCriticFactoryCompGraphStdDense implements ActorCriticFactoryCo
         confB
                 .addLayer("value", new OutputLayer.Builder(LossFunctions.LossFunction.MSE)
                         .activation("identity")
-                        .nOut(1).build(), (getConf().getNumLayer() - 1) + "");
+                        .nOut(1).build(), (config.getNumLayer() - 1) + "");
 
         confB
                 .addLayer("softmax", new OutputLayer.Builder(LossFunctions.LossFunction.MCXENT)
                         .activation("softmax") //fixthat
-                        .nOut(numOutputs).build(), (getConf().getNumLayer() - 1) + "");
+                        .nOut(numOutputs).build(), (config.getNumLayer() - 1) + "");
 
         confB.setOutputs("value", "softmax");
 
@@ -78,15 +93,34 @@ public class ActorCriticFactoryCompGraphStdDense implements ActorCriticFactoryCo
         return new ActorCriticCompGraph(model);
     }
 
-    @Value
     public static class Configuration {
+        private final int numLayer;
+        private final int numHiddenNodes;
+        private final double learningRate;
+        private final double l2;
 
-        int numLayer;
-        int numHiddenNodes;
-        double learningRate;
-        double l2;
+        public Configuration(int numLayer, int numHiddenNodes, double learningRate, double l2) {
+            this.numLayer = numLayer;
+            this.numHiddenNodes = numHiddenNodes;
+            this.learningRate = learningRate;
+            this.l2 = l2;
+        }
 
+        public int getNumLayer() {
+            return numLayer;
+        }
+
+        public int getNumHiddenNodes() {
+            return numHiddenNodes;
+        }
+
+        public double getLearningRate() {
+            return learningRate;
+        }
+
+        public double getL2() {
+            return l2;
+        }
     }
-
 
 }

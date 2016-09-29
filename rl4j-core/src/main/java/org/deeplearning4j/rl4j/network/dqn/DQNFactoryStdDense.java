@@ -1,6 +1,5 @@
 package org.deeplearning4j.rl4j.network.dqn;
 
-import lombok.Value;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
@@ -17,21 +16,34 @@ import org.nd4j.linalg.lossfunctions.LossFunctions;
  * @author rubenfiszel (ruben.fiszel@epfl.ch) 7/13/16.
  */
 
-@Value
 public class DQNFactoryStdDense implements DQNFactory {
 
+    private Configuration conf;
 
-    Configuration conf;
+    public DQNFactoryStdDense(final Configuration conf) {
+        this.conf = conf;
+    }
 
-    public DQN buildDQN(int[] numInputs, int numOutputs) {
+    public DQNFactoryStdDense setDefaultConfiguration(final Configuration config) {
+        conf = config;
+        return this;
+    }
 
-        System.out.println(conf);
+    public Configuration getConf() {
+        return this.conf;
+    }
+
+    public DQN buildDQN(int shapeInputs[], int numOutputs) {
+        return buildDQN(shapeInputs, numOutputs, this.getConf());
+    }
+
+    public static DQN buildDQN(int[] numInputs, int numOutputs, Configuration config) {
 
         NeuralNetConfiguration.ListBuilder confB = new NeuralNetConfiguration.Builder()
                 .seed(Constants.NEURAL_NET_SEED)
                 .iterations(1)
                 .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
-                .learningRate(conf.getLearningRate())
+                .learningRate(config.getLearningRate())
                 //.updater(Updater.NESTEROVS).momentum(0.9)
                 .updater(Updater.ADAM)
                 //.updater(Updater.RMSPROP).rho(conf.getRmsDecay())//.rmsDecay(conf.getRmsDecay())
@@ -41,24 +53,24 @@ public class DQNFactoryStdDense implements DQNFactory {
                 .list()
                 .layer(0, new DenseLayer.Builder()
                         .nIn(numInputs[0])
-                        .nOut(conf.getNumHiddenNodes())
+                        .nOut(config.getNumHiddenNodes())
                         .activation("relu")
                         .build());
 
 
-        for (int i = 1; i < conf.getNumLayer(); i++) {
+        for (int i = 1; i < config.getNumLayer(); i++) {
             confB
                     .layer(i, new DenseLayer.Builder()
-                            .nIn(conf.getNumHiddenNodes())
-                            .nOut(conf.getNumHiddenNodes())
+                            .nIn(config.getNumHiddenNodes())
+                            .nOut(config.getNumHiddenNodes())
                             .activation("relu")
                             .build());
         }
 
         confB
-                .layer(conf.getNumLayer(), new OutputLayer.Builder(LossFunctions.LossFunction.MSE)
+                .layer(config.getNumLayer(), new OutputLayer.Builder(LossFunctions.LossFunction.MSE)
                         .activation("identity")
-                        .nIn(conf.getNumHiddenNodes())
+                        .nIn(config.getNumHiddenNodes())
                         .nOut(numOutputs)
                         .build());
 
@@ -70,15 +82,33 @@ public class DQNFactoryStdDense implements DQNFactory {
         return new DQN(model);
     }
 
-    @Value
     public static class Configuration {
+        private final int numLayer;
+        private final int numHiddenNodes;
+        private final double learningRate;
+        private final double l2;
 
-        int numLayer;
-        int numHiddenNodes;
-        double learningRate;
-        double l2;
+        public Configuration(final int numLayer, final int numHiddenNodes, final double learningRate, final double l2) {
+            this.numLayer = numLayer;
+            this.numHiddenNodes = numHiddenNodes;
+            this.learningRate = learningRate;
+            this.l2 = l2;
+        }
 
+        int getNumLayer() {
+            return numLayer;
+        }
+
+        int getNumHiddenNodes() {
+            return numHiddenNodes;
+        }
+
+        double getLearningRate() {
+            return learningRate;
+        }
+
+        public double getL2() {
+            return l2;
+        }
     }
-
-
 }
