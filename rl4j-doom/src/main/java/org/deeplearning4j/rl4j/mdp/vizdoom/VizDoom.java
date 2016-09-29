@@ -6,6 +6,7 @@ import org.deeplearning4j.rl4j.space.ArrayObservationSpace;
 import org.deeplearning4j.rl4j.space.DiscreteSpace;
 import org.deeplearning4j.rl4j.space.Encodable;
 import org.deeplearning4j.rl4j.space.ObservationSpace;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import oshi.SystemInfo;
@@ -58,8 +59,7 @@ public abstract class VizDoom implements MDP<VizDoom.GameScreen, Integer, Discre
         game = new DoomGame();
         setupGame();
         discreteSpace = new DiscreteSpace(getConfiguration().getButtons().size() + 1);
-        observationSpace = new ArrayObservationSpace<>(
-                new int[]{game.getScreenHeight(), game.getScreenWidth(), 3});
+        observationSpace = new ArrayObservationSpace<>(new int[]{game.getScreenHeight(), game.getScreenWidth(), 3});
     }
 
 

@@ -2,8 +2,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>rl4j</artifactId>
-        <groupId>org.deeplearning4j.rl4j</groupId>
-        <version>0.5.1-SNAPSHOT</version>
+        <groupId>org.deeplearning4j</groupId>
+        <version>0.6.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -11,7 +11,6 @@
     <packaging>jar</packaging>
 
     <name>rl4j-doom</name>
-    <url>http://maven.apache.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -26,12 +25,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>com.github.dblock</groupId>
             <artifactId>oshi-core</artifactId>
             <version>3.1.1</version>
@@ -42,9 +35,9 @@
             <version>1.0</version>
         </dependency>
         <dependency>
-            <groupId>org.deeplearning4j.rl4j</groupId>
+            <groupId>org.deeplearning4j</groupId>
             <artifactId>rl4j-api</artifactId>
-            <version>0.5.1-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

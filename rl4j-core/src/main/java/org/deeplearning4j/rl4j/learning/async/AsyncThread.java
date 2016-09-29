@@ -1,5 +1,7 @@
 package org.deeplearning4j.rl4j.learning.async;
 
+import org.deeplearning4j.rl4j.space.ActionSpace;
+import org.deeplearning4j.rl4j.space.Encodable;
 
 import org.deeplearning4j.rl4j.learning.HistoryProcessor;
 import org.deeplearning4j.rl4j.learning.IHistoryProcessor;
@@ -8,8 +10,7 @@ import org.deeplearning4j.rl4j.learning.StepCountable;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.network.NeuralNet;
 import org.deeplearning4j.rl4j.policy.Policy;
-import org.deeplearning4j.rl4j.space.ActionSpace;
-import org.deeplearning4j.rl4j.space.Encodable;
+
 import org.deeplearning4j.rl4j.util.DataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

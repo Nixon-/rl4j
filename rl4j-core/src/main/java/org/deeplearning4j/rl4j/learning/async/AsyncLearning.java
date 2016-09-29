@@ -1,9 +1,9 @@
 package org.deeplearning4j.rl4j.learning.async;
 
-import org.deeplearning4j.rl4j.learning.Learning;
-import org.deeplearning4j.rl4j.network.NeuralNet;
 import org.deeplearning4j.rl4j.space.ActionSpace;
 import org.deeplearning4j.rl4j.space.Encodable;
+import org.deeplearning4j.rl4j.learning.Learning;
+import org.deeplearning4j.rl4j.network.NeuralNet;
 
 import java.util.concurrent.TimeUnit;
 

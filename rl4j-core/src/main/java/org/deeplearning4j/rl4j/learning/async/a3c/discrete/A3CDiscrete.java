@@ -1,5 +1,8 @@
 package org.deeplearning4j.rl4j.learning.async.a3c.discrete;
 
+
+import org.deeplearning4j.rl4j.space.DiscreteSpace;
+import org.deeplearning4j.rl4j.space.Encodable;
 import org.deeplearning4j.rl4j.learning.async.AsyncConfiguration;
 import org.deeplearning4j.rl4j.learning.async.AsyncGlobal;
 import org.deeplearning4j.rl4j.learning.async.AsyncLearning;
@@ -8,8 +11,7 @@ import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.network.ac.IActorCritic;
 import org.deeplearning4j.rl4j.policy.ACPolicy;
 import org.deeplearning4j.rl4j.policy.Policy;
-import org.deeplearning4j.rl4j.space.DiscreteSpace;
-import org.deeplearning4j.rl4j.space.Encodable;
+
 import org.deeplearning4j.rl4j.util.DataManager;
 
 /**
