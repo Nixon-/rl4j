@@ -7,7 +7,5 @@ package org.deeplearning4j.rl4j.network.ac;
  * Actor Critic!
  */
 public interface ActorCriticFactoryCompGraph {
-
     IActorCritic buildActorCritic(int shapeInputs[], int numOutputs);
-
 }

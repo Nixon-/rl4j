@@ -16,7 +16,6 @@ import org.nd4j.linalg.lossfunctions.LossFunctions;
 /**
  * @author rubenfiszel (ruben.fiszel@epfl.ch) on 8/9/16.
  *
- *
  */
 public class ActorCriticFactoryCompGraphStdDense implements ActorCriticFactoryCompGraph {
 

@@ -1,5 +1,6 @@
 package org.deeplearning4j.rl4j.learning.sync.qlearning.discrete;
 
+import org.deeplearning4j.rl4j.learning.sync.qlearning.QLConfiguration;
 import org.deeplearning4j.rl4j.space.DiscreteSpace;
 import org.deeplearning4j.rl4j.space.Encodable;
 import org.deeplearning4j.rl4j.learning.HistoryProcessor;
@@ -17,16 +18,19 @@ import org.deeplearning4j.rl4j.util.DataManager;
  */
 public class QLearningDiscreteConv<O extends Encodable> extends QLearningDiscrete<O> {
 
-    public QLearningDiscreteConv(MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn, HistoryProcessor.Configuration hpconf, QLConfiguration conf, DataManager dataManager) {
+    public QLearningDiscreteConv(MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn, HistoryProcessor.Configuration hpconf,
+                                 QLConfiguration conf, DataManager dataManager) {
         super(mdp, dqn, conf, dataManager, conf.getEpsilonNbStep()*hpconf.getSkipFrame());
         setHistoryProcessor(hpconf);
     }
 
-    public QLearningDiscreteConv(MDP<O, Integer, DiscreteSpace> mdp, DQNFactory factory, HistoryProcessor.Configuration hpconf, QLConfiguration conf, DataManager dataManager) {
+    public QLearningDiscreteConv(MDP<O, Integer, DiscreteSpace> mdp, DQNFactory factory,
+                                 HistoryProcessor.Configuration hpconf, QLConfiguration conf, DataManager dataManager) {
         this(mdp, factory.buildDQN(hpconf.getShape(), mdp.getActionSpace().getSize()), hpconf, conf, dataManager);
     }
 
-    public QLearningDiscreteConv(MDP<O, Integer, DiscreteSpace> mdp, DQNFactoryStdConv.Configuration netConf, HistoryProcessor.Configuration hpconf, QLConfiguration conf, DataManager dataManager) {
+    public QLearningDiscreteConv(MDP<O, Integer, DiscreteSpace> mdp, DQNFactoryStdConv.Configuration netConf,
+                                 HistoryProcessor.Configuration hpconf, QLConfiguration conf, DataManager dataManager) {
         this(mdp, new DQNFactoryStdConv(netConf), hpconf, conf, dataManager);
     }
 }

@@ -17,7 +17,7 @@ class ActorCriticCompGraph implements IActorCritic {
 
     private final ComputationGraph cg;
 
-    public ActorCriticCompGraph(ComputationGraph cg) {
+    ActorCriticCompGraph(ComputationGraph cg) {
         this.cg = cg;
     }
 

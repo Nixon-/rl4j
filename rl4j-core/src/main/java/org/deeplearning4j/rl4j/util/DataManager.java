@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.file.*;
+import java.util.Arrays;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -26,10 +27,9 @@ import java.util.zip.ZipOutputStream;
  */
 public class DataManager {
 
-
-    final private Logger log = LoggerFactory.getLogger("DataManager");
-    final private String home = System.getProperty("user.home");
-    final private ObjectMapper mapper = new ObjectMapper();
+    private final Logger log = LoggerFactory.getLogger("DataManager");
+    private final String home = System.getProperty("user.home");
+    private final ObjectMapper mapper = new ObjectMapper();
     private String dataRoot = home + "/" + Constants.DATA_DIR;
     private boolean saveData;
     private String currentDir;
@@ -269,24 +269,15 @@ public class DataManager {
     }
 
     private boolean childrenExist(File[] files, String children) {
-        boolean exists = false;
-        for (int i = 0; i < files.length; i++) {
-            if (files[i].getName().equals(children)) {
-                exists = true;
-                break;
-            }
-        }
-        return exists;
+        return Arrays.stream(files).map(File::getName).anyMatch(name -> name.equals(children));
     }
 
     public void save(Learning learning) {
-
-        if (!saveData)
+        if (saveData) {
             return;
-
+        }
         save(getModelDir() + "/" + learning.getStepCounter() + ".training", learning);
         learning.getNeuralNet().save(getModelDir() + "/" + learning.getStepCounter() + ".model");
-
     }
 
     //In order for jackson to serialize StatEntry

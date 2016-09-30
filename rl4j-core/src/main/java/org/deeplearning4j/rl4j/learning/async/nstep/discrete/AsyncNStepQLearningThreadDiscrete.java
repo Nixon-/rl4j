@@ -23,14 +23,14 @@ import java.util.Stack;
  */
 class AsyncNStepQLearningThreadDiscrete<O extends Encodable> extends AsyncThreadDiscrete<O, IDQN> {
 
-    final private AsyncNStepQLearningDiscrete.AsyncNStepQLConfiguration conf;
+    final private AsyncNStepQLConfiguration conf;
     private final MDP<O, Integer, DiscreteSpace> mdp;
     private final AsyncGlobal<IDQN> asyncGlobal;
     private final int threadNumber;
     final private DataManager dataManager;
 
     AsyncNStepQLearningThreadDiscrete(MDP<O, Integer, DiscreteSpace> mdp, AsyncGlobal<IDQN> asyncGlobal,
-                                      AsyncNStepQLearningDiscrete.AsyncNStepQLConfiguration conf, int threadNumber,
+                                      AsyncNStepQLConfiguration conf, int threadNumber,
                                       DataManager dataManager) {
         super(asyncGlobal, threadNumber);
         this.conf = conf;
@@ -46,7 +46,7 @@ class AsyncNStepQLearningThreadDiscrete<O extends Encodable> extends AsyncThread
     }
 
     @Override
-    public AsyncNStepQLearningDiscrete.AsyncNStepQLConfiguration getConf() {
+    public AsyncNStepQLConfiguration getConf() {
         return conf;
     }
 

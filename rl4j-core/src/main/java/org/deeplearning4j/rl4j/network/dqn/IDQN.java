@@ -34,6 +34,5 @@ public interface IDQN extends NeuralNet {
 
     void save(String path);
 
-
     double getLatestScore();
 }

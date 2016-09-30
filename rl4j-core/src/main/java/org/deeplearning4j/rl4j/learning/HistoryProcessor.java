@@ -113,16 +113,15 @@ public class HistoryProcessor implements IHistoryProcessor {
         //   waitKP();
         //Crop by croppingHeight, croppingHeight
         Mat cropped = resized.apply(new Rect(conf.getOffsetX(), conf.getOffsetY(), conf.getCroppingWidth(), conf.getCroppingHeight()));
-        //System.out.println(conf.getCroppingWidth() + " " + cropped.data().asBuffer().array().length);
 
-        INDArray out = null;
+        INDArray out;
         try {
             out = new NativeImageLoader(conf.getCroppingHeight(), conf.getCroppingWidth()).asMatrix(cropped);
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalStateException("Illegal State, can't proceed", e);
         }
-        //System.out.println(out.shapeInfoToString());
+
         out = out.reshape(1, conf.getCroppingHeight(), conf.getCroppingWidth());
         return compressor.compress(out);
     }

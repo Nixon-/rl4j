@@ -3,6 +3,8 @@ package org.deeplearning4j.rl4j.learning.sync.qlearning.discrete;
 import org.deeplearning4j.berkeley.Pair;
 import org.deeplearning4j.gym.StepReply;
 
+import org.deeplearning4j.rl4j.learning.sync.qlearning.QLConfiguration;
+import org.deeplearning4j.rl4j.learning.sync.qlearning.QLStepReturn;
 import org.deeplearning4j.rl4j.space.DiscreteSpace;
 import org.deeplearning4j.rl4j.space.Encodable;
 import org.deeplearning4j.rl4j.learning.Learning;
@@ -29,7 +31,7 @@ import java.util.function.Function;
  * http://arxiv.org/abs/1312.5602
  *
  */
-public abstract class QLearningDiscrete<O extends Encodable> extends QLearning<O, Integer, DiscreteSpace> {
+abstract class QLearningDiscrete<O extends Encodable> extends QLearning<O, Integer, DiscreteSpace> {
 
     final private QLConfiguration configuration;
 
@@ -50,7 +52,7 @@ public abstract class QLearningDiscrete<O extends Encodable> extends QLearning<O
     private int lastMonitor = -Constants.MONITOR_FREQ;
 
 
-    public QLearningDiscrete(MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn, QLConfiguration conf, DataManager dataManager, int epsilonNbStep) {
+    QLearningDiscrete(MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn, QLConfiguration conf, DataManager dataManager, int epsilonNbStep) {
         super(conf);
         this.configuration = conf;
         this.mdp = mdp;

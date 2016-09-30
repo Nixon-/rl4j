@@ -39,5 +39,4 @@ public class BoltzmannQ<O extends Encodable> extends Policy<O, Integer> {
 
     }
 
-
 }

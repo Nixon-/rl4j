@@ -9,6 +9,5 @@ import org.deeplearning4j.rl4j.network.NeuralNet;
  * fetchable for evaluation
  */
 public interface NeuralNetFetchable<NN extends NeuralNet> {
-
     NN getNeuralNet();
 }

@@ -43,16 +43,15 @@ public abstract class Policy<O extends Encodable, A> {
             INDArray input = Learning.getInput(mdp, obs);
             boolean isHistoryProcessor = hp != null;
 
-            if (isHistoryProcessor)
+            if (isHistoryProcessor) {
                 hp.record(input);
+            }
 
             int skipFrame = isHistoryProcessor ? hp.getConf().getSkipFrame() : 1;
-
 
             if (step % skipFrame != 0) {
                 action = lastAction;
             } else {
-
                 if (history == null) {
                     if (isHistoryProcessor) {
                         hp.add(input);
@@ -65,18 +64,21 @@ public abstract class Policy<O extends Encodable, A> {
                     hstack = hstack.reshape(Learning.makeShape(1, hstack.shape()));
                 action = nextAction(hstack);
             }
+
             lastAction = action;
 
             StepReply<O> stepReply = mdp.step(action);
             reward += stepReply.getReward();
 
-            if (isHistoryProcessor)
+            if (isHistoryProcessor) {
                 hp.add(Learning.getInput(mdp, stepReply.getObservation()));
+            }
 
-            history = isHistoryProcessor ? hp.getHistory() : new INDArray[]{Learning.getInput(mdp, stepReply.getObservation())};
+            history = isHistoryProcessor ? hp.getHistory() : new INDArray[] {
+                        Learning.getInput(mdp, stepReply.getObservation())
+                    };
             step++;
         }
-
 
         return reward;
     }

@@ -21,7 +21,8 @@ public class AsyncNStepQLearningDiscreteDense<O extends Encodable> extends Async
 
     public AsyncNStepQLearningDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, DQNFactory factory,
                                             AsyncNStepQLConfiguration conf, DataManager dataManager) {
-        this(mdp, factory.buildDQN(mdp.getObservationSpace().getShape(), mdp.getActionSpace().getSize()), conf, dataManager);
+        this(mdp, factory.buildDQN(mdp.getObservationSpace().getShape(), mdp.getActionSpace().getSize()),
+                conf, dataManager);
     }
 
     public AsyncNStepQLearningDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp,

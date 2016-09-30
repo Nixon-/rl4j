@@ -8,7 +8,5 @@ package org.deeplearning4j.rl4j.learning;
  * for the web monitoring
  */
 public interface StepCountable {
-
     int getStepCounter();
-
 }

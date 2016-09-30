@@ -11,12 +11,12 @@ import org.deeplearning4j.rl4j.space.HighLowDiscrete;
  * into the HighLow from Gym
  */
 
-public class ActionTransformer extends DiscreteSpace {
+class ActionTransformer extends DiscreteSpace {
 
     final private int[] availableAction;
     final private HighLowDiscrete hld;
 
-    public ActionTransformer(HighLowDiscrete hld, int[] availableAction) {
+    ActionTransformer(HighLowDiscrete hld, int[] availableAction) {
         super(availableAction.length);
         this.hld = hld;
         this.availableAction = availableAction;

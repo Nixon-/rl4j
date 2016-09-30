@@ -19,10 +19,10 @@ public class GymEnv<O, A, AS extends ActionSpace<A>> implements MDP<O, A, AS> {
 
     private final static String GYM_MONITOR_DIR = "/tmp/gym-dqn";
 
-    final private Client<O, A, AS> client;
-    final private String envId;
-    final private boolean render;
-    final private boolean monitor;
+    private final Client<O, A, AS> client;
+    private final String envId;
+    private final boolean render;
+    private final boolean monitor;
     private ActionTransformer actionTransformer = null;
     private boolean done = false;
 
@@ -48,7 +48,7 @@ public class GymEnv<O, A, AS extends ActionSpace<A>> implements MDP<O, A, AS> {
         if (actionTransformer == null)
             return client.getActionSpace();
         else {
-            return (AS)actionTransformer;
+            return  (AS) actionTransformer;
         }
     }
 

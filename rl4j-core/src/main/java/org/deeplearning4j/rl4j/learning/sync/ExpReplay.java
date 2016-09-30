@@ -16,8 +16,8 @@ import java.util.*;
  */
 public class ExpReplay<A> implements IExpReplay<A> {
 
-
     final private Logger log = LoggerFactory.getLogger("Exp Replay");
+
     final private int batchSize;
 
     //Implementing this as a circular buffer queue
@@ -54,9 +54,7 @@ public class ExpReplay<A> implements IExpReplay<A> {
 
     public void store(Transition<A> transition) {
         storage.add(transition);
-        //log.info("size: "+storage.size());
+        log.debug("size: "+storage.size());
     }
-
-
 
 }

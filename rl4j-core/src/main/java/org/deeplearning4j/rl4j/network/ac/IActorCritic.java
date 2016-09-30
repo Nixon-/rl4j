@@ -18,7 +18,8 @@ public interface IActorCritic extends NeuralNet {
 
     void fit(INDArray input, INDArray[] labels);
 
-    //FIRST SHOULD BE VALUE AND SECOND IS SOFTMAX POLICY. DONT MESS THIS UP OR ELSE ASYNC THREAD IS BROKEN (maxQ) !
+    //FIRST SHOULD BE VALUE AND SECOND IS SOFTMAX POLICY.
+    // DONT MESS THIS UP OR ELSE ASYNC THREAD IS BROKEN (maxQ) !
     INDArray[] outputAll(INDArray batch);
 
     IActorCritic clone();

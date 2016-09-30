@@ -30,15 +30,12 @@ public abstract class SyncLearning<O extends Encodable, A, AS extends ActionSpac
 
         getDataManager().writeInfo(this);
 
-
         while (getStepCounter() < getConfiguration().getMaxStep()) {
 
             getLogger().info("Epoch: " + getEpochCounter());
-
             preEpoch();
             DataManager.StatEntry statEntry = trainEpoch();
             postEpoch();
-
             incrementEpoch();
 
             if (getStepCounter() - lastSave >= Constants.MODEL_SAVE_FREQ) {
@@ -51,7 +48,6 @@ public abstract class SyncLearning<O extends Encodable, A, AS extends ActionSpac
             getDataManager().writeInfo(this);
 
         }
-
 
     }
 

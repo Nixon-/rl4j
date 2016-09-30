@@ -26,7 +26,7 @@ import java.util.Stack;
  */
 class A3CThreadDiscrete<O extends Encodable> extends AsyncThreadDiscrete<O, IActorCritic> {
 
-    private final A3CDiscrete.A3CConfiguration conf;
+    private final A3CConfiguration conf;
     private final MDP<O, Integer, DiscreteSpace> mdp;
     private final AsyncGlobal<IActorCritic> asyncGlobal;
     private final int threadNumber;
@@ -34,7 +34,7 @@ class A3CThreadDiscrete<O extends Encodable> extends AsyncThreadDiscrete<O, IAct
 
 
     A3CThreadDiscrete(MDP<O, Integer, DiscreteSpace> mdp, AsyncGlobal<IActorCritic> asyncGlobal,
-                      A3CDiscrete.A3CConfiguration a3cc, int threadNumber, DataManager dataManager) {
+                      A3CConfiguration a3cc, int threadNumber, DataManager dataManager) {
         super(asyncGlobal, threadNumber);
         this.conf = a3cc;
         this.asyncGlobal = asyncGlobal;
@@ -44,7 +44,7 @@ class A3CThreadDiscrete<O extends Encodable> extends AsyncThreadDiscrete<O, IAct
     }
 
     @Override
-    public A3CDiscrete.A3CConfiguration getConf() {
+    public A3CConfiguration getConf() {
         return conf;
     }
 
@@ -82,7 +82,8 @@ class A3CThreadDiscrete<O extends Encodable> extends AsyncThreadDiscrete<O, IAct
 
         int size = rewards.size();
 
-        int[] shape = getHistoryProcessor() == null ? mdp.getObservationSpace().getShape() : getHistoryProcessor().getConf().getShape();
+        int[] shape = getHistoryProcessor() == null ? mdp.getObservationSpace().getShape() :
+                getHistoryProcessor().getConf().getShape();
         int[] nshape = Learning.makeShape(size, shape);
 
         INDArray input = Nd4j.create(nshape);
